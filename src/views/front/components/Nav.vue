@@ -32,7 +32,7 @@
 							</el-dropdown-item>
 							<el-dropdown-item divided @click="logout">
 								<span>退出登錄</span>
-							</el-dropdown-item>
+              </el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</div>

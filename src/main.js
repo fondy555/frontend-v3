@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 // import store from './store'
 
-// import '@/styles/index.scss' // global css
+import '@/styles/index.scss' // global css
 
 // import md5 from 'md5'
 import ElementPlus from 'element-plus';

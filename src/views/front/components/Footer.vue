@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getFooterData } from '@/api/index'
+// import { getFooterData } from '@/api/index'
 
 export default {
     name: 'Footer',

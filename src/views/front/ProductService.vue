@@ -40,8 +40,8 @@
                     style="margin-top: 10px;"
                     :format-tooltip="formatTooltip"
                   >
-                    <!-- <span slot="start">{{ stockRange[0] }}</span>
-                    <span slot="end">{{ stockRange[1] }}</span> -->
+                    <!-- <template v-slot:start>{{ stockRange[0] }}</template>
+                    <template v-slot:end>{{ stockRange[1] }}</template> -->
                   </el-slider>
 
                   <!-- 价格筛选 -->
@@ -80,20 +80,19 @@
         </el-row>
 			</el-card>
 		</div>
-		<!-- <Footer class="top"/> -->
+		<Footer class="top"/>
 	</div>
 </template>
 
 <script>
 import Banner from './components/Banner'
 import Nav from './components/Nav.vue'
-// import Footer from './components/Footer.vue'
-// import { getAllProducts } from '@/api/index.js'
+import Footer from './components/Footer.vue'
+import { getAllProducts } from '@/api/index.js'
 
 export default {
     name: 'ProductService',
-    components: {Nav, Banner},
-    // components: {Nav, Footer, Banner},
+    components: {Nav, Footer, Banner},
 
     data() {
         return {
@@ -130,7 +129,7 @@ export default {
         };
     },
     mounted() {
-        // this.fetchProducts();
+        this.fetchProducts();
         // this.mouseover();
     },
 
@@ -153,16 +152,16 @@ export default {
     },
 
     methods: {
-        // fetchProducts() {
-        //   getAllProducts().then(response => {
-        //         this.products = response.data; // 访问response.data
-        //     }).catch(error => {
-        //         console.error('Failed to fetch products:', error);
-        //     });
-        // },
-        // viewDetails(id) {
-        //   this.$router.push({ name: 'Product', params: { id } });
-        // },
+        fetchProducts() {
+          getAllProducts().then(response => {
+                this.products = response.data; // 访问response.data
+            }).catch(error => {
+                console.error('Failed to fetch products:', error);
+            });
+        },
+        viewDetails(id) {
+          this.$router.push({ name: 'Product', params: { id } });
+        },
         formatTooltip(value, type) {
           if (type === 'price') {
                 return `$${value}`;
@@ -249,11 +248,7 @@ export default {
   height: 350px;
 }
 
-/* 滾動條樣式 */
-.slider {
-  margin-left: 10px;
-  margin-right: 10px;
-}
+
 
 .product-row {
   max-height: 1000px;
