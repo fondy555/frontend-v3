@@ -160,7 +160,7 @@ export default {
             });
         },
         viewDetails(id) {
-          this.$router.push({ name: 'Product', params: { id } });
+          this.$router.push({ name: 'ProductDetail', params: { id } });
         },
         formatTooltip(value, type) {
           if (type === 'price') {

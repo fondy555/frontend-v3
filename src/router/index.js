@@ -12,6 +12,12 @@ const routes = [
         meta: {
             title: '产品与服务'
         }
+    },
+    {
+        path: '/ProductDetail/:id',
+        name: 'ProductDetail',
+        component: () => import('@/views/front/components/ProductDetail.vue'),
+        props: true
     }
 ]
 
