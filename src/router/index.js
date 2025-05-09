@@ -18,12 +18,6 @@ const routes = [
         name: 'ProductDetail',
         component: () => import('@/views/front/components/ProductDetail.vue'),
         props: true
-    },
-    {
-        path: '/about/:id',
-        name: 'about',
-        component: () => import('@/views/front/components/Product.vue'),
-        props: true
     }
 ]
 
