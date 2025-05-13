@@ -18,6 +18,31 @@ const routes = [
         name: 'ProductDetail',
         component: () => import('@/views/front/components/ProductDetail.vue'),
         props: true
+    },
+    {
+        path: '/login',
+        component: () => import('@/views/login/login.vue'),
+        meta: {
+            title: '登录'
+        }
+    },
+    {
+        path: '/admin',
+        name: 'Admin',
+        component: () => import('@/views/admin/Index.vue'),
+        meta: {
+            title: '后台首页'
+        },
+        children: [
+                        {
+                path: '/info',
+                name: 'Info',
+                component: () => import('@/views/admin/Info.vue'),
+                meta: {
+                    title: '基本信息'
+                }
+            }
+        ]
     }
 ]
 

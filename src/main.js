@@ -1,7 +1,7 @@
 import { createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
-// import store from './store'
+import store from './store'
 
 import '@/styles/index.scss' // global css
 
@@ -28,4 +28,5 @@ import 'element-plus/dist/index.css';    // 引入element-plus样式
 createApp(App)
     .use(ElementPlus)
     .use(router)
+    .use(store)
     .mount('#app')
