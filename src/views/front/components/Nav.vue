@@ -23,17 +23,19 @@
 				<div v-else class="loginOut">
 					<el-dropdown trigger="hover">
 						<div class="avatar-wrapper">
-							<el-avatar src=""></el-avatar>
+							<el-avatar :src='require("@/assets/avatar.png")'></el-avatar>
 							<span style="font-size: 12px;margin-left:10px">{{ name }}</span>
 						</div>
+            <template #dropdown>
 						<el-dropdown-menu>
-							<el-dropdown-item @click="info">
+							<el-dropdown-item @click="backend">
 								<span>後臺管理</span>
 							</el-dropdown-item>
 							<el-dropdown-item divided @click="logout">
 								<span>退出登錄</span>
               </el-dropdown-item>
 						</el-dropdown-menu>
+            </template>
 					</el-dropdown>
 				</div>
 			</div>
@@ -42,7 +44,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapGetters, mapActions } from "vuex";
 // import {getToken, register} from '@/api/user'
 // import {sendMobileVerifyCode, compareVerifycode, resetpass} from "@/api/user";
 
@@ -74,7 +76,19 @@ export default {
         ...mapGetters(["avatar", "name", "roles", "isPay"]),
     },
     mounted() {
-        this.isLogin = localStorage.getItem("token") ? true : false;
+        const token = localStorage.getItem("token");
+        // console.log("Token:", token); // 调试代码，检查 token 是否正确读取
+        this.isLogin = token ? true : false;
+
+        if (this.isLogin) {
+          this.getInfo();
+            // this.getInfo(token).then(response => {
+            //     console.log('User info:', response); // 打印用户信息
+            // }).catch(error => {
+            //     console.error('NAV Failed to fetch user info:', error);
+            // });
+        }
+
         const cachedFooterData = localStorage.getItem('footerData');
         if (cachedFooterData) {
             const footerData = JSON.parse(cachedFooterData);
@@ -85,6 +99,7 @@ export default {
     },
 
     methods: {
+        ...mapActions('user', ['getInfo']),
         logout() {
             this.$message.success('退出成功')
             localStorage.removeItem('token')
@@ -100,9 +115,9 @@ export default {
                 this.$router.push('/login')
             }
         },
-        info() {
+        backend() {
             this.$router.push({
-                path: '/info'
+                path: '/productList'
             })
         },
         toDetail(item) {

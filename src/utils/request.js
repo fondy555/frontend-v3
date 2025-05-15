@@ -8,7 +8,7 @@ import router from '@/router' // 添加 router 导入
 
 // 创建一个 axios 实例
 const base = process.env.NODE_ENV === 'development' ? '/api' : baseUrl
-console.log(base, 'base-------')
+// console.log(base, 'base-------')
 const service = axios.create({
     baseURL: base, // url = 基础 url + 请求 url
     // withCredentials: true, // 当跨域请求时发送 cookies
@@ -36,7 +36,7 @@ service.interceptors.request.use(
     error => {
         // 处理请求错误
         tryHideFullScreenLoading()
-        console.log(error) // 用于调试
+        console.log("request error: ", error) // 用于调试
         return Promise.reject(error)
     }
 )

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-// import { getFooterData } from '@/api/index'
+import { getFooterData } from '@/api/index'
 
 export default {
     name: 'Footer',
@@ -43,34 +43,34 @@ export default {
     },
 
     mounted() {
-        // // 获取缓存的数据
-        // const cachedFooterData = localStorage.getItem('footerData');
-        // // 如果有缓存的数据，则使用缓存的数据
-        // if (cachedFooterData) {
-        //     this.footerData = JSON.parse(cachedFooterData);
-        // } else {
-        //     this.fetchFooterData();
-        // }
+        // 获取缓存的数据
+        const cachedFooterData = localStorage.getItem('footerData');
+        // 如果有缓存的数据，则使用缓存的数据
+        if (cachedFooterData) {
+            this.footerData = JSON.parse(cachedFooterData);
+        } else {
+            this.fetchFooterData();
+        }
     },
 
     methods: {
         // 获取Footer数据
-        // async fetchFooterData() {
-        //     try {
-        //         // 获取Footer数据
-        //         const response = await getFooterData();
-        //         // 如果请求成功，且数据不为空，则更新数据
-        //         if (response.code === 0 && response.data.length > 0) {
-        //             this.footerData = response.data[0];
-        //             // 将数据缓存到localStorage
-        //             localStorage.setItem('footerData', JSON.stringify(this.footerData));
-        //         } else {
-        //             console.error('Failed to fetch footer data:', response.message);
-        //         }
-        //     } catch (error) {
-        //         console.error('Failed to fetch footer data:', error);
-        //     }
-        // }
+        async fetchFooterData() {
+            try {
+                // 获取Footer数据
+                const response = await getFooterData();
+                // 如果请求成功，且数据不为空，则更新数据
+                if (response.code === 0 && response.data.length > 0) {
+                    this.footerData = response.data[0];
+                    // 将数据缓存到localStorage
+                    localStorage.setItem('footerData', JSON.stringify(this.footerData));
+                } else {
+                    console.error('Failed to fetch footer data:', response.message);
+                }
+            } catch (error) {
+                console.error('Failed to fetch footer data:', error);
+            }
+        }
     },
 };
 </script>

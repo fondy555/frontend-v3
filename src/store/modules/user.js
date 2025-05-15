@@ -1,6 +1,7 @@
 import {login, logout, getInfo} from '@/api/user'
 import {getToken, setToken, removeToken} from '@/utils/auth'
 import router, {resetRouter} from '@/router'
+// import { id } from 'element-plus/es/locale'
 
 // 初始状态
 const state = {
@@ -66,33 +67,35 @@ const actions = {
     // 获取用户信息
     getInfo({commit}) {
         return new Promise((resolve, reject) => {
-            const tokens = getToken()
-            getInfo(tokens).then(response => {
-                const roleList = response.body.sessionSubject.roleList
-                const roleArr = []
-                roleList.forEach(item => {
-                    roleArr.push(item.id)
-                })
-                const data = {
-                    roles: roleArr, name: response.body.nickname, mobile: response.body.mobile
-                }
-                sessionStorage.setItem('supId', roleList[0].supId)
-                sessionStorage.setItem('supName', roleList[0].supName)
-                sessionStorage.setItem('loginNum', response.body.loginNum)
-                if (response.status != 0) {
-                    reject('请重新登录！')
-                }
-                const {roles, name, mobile} = data
-                if (!roles || roles.length <= 0) {
-                    reject('getInfo: roles must be a non-null array!')
-                }
-                commit('SET_ROLES', roles)
-                commit('SET_NAME', name)
-                commit('SET_MOBILE', mobile)
-                commit('SET_LOGIN_ID', response.body.id)
-                resolve(data)
+            // const tokens = getToken()
+            // console.log(" getInfo tokens: ", tokens)
+            getInfo().then(response => {
+                // console.log('Store getInfo response:', response); // 打印Store获取用户信息响应
+                // const roleList = response.body.sessionSubject.roleList
+                // const roleArr = []
+                // roleList.forEach(item => {
+                //     roleArr.push(item.id)
+                // })
+                // const data = {
+                //     roles: roleArr, name: response.body.nickname, mobile: response.body.mobile
+                // }
+                // sessionStorage.setItem('supId', response.body.supId)
+                // sessionStorage.setItem('supName', response.body.supName)
+                // sessionStorage.setItem('loginNum', response.body.loginNum)
+                // if (response.status != 0) {
+                //     reject('请重新登录！')
+                // }
+                // const {roles, name, mobile} = data
+                // if (!roles || roles.length <= 0) {
+                //     reject('getInfo: roles must be a non-null array!')
+                // }
+                // commit('SET_ROLES', roles)
+                commit('SET_NAME',  response.data.username)
+                // commit('SET_MOBILE', data.mobile)
+                // commit('SET_LOGIN_ID', data.id)
+                resolve(response)
             }).catch(error => {
-                console.log(error)
+                console.error('Failed to fetch user info:', error);
                 reject(error)
             })
         })

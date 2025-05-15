@@ -16,6 +16,7 @@
                             </template>
                         </el-input>
                         <el-button type="primary" @click="handleLogin" style="width: 100%;margin-top: 30px">立即登录</el-button>
+                        <el-button type="primary" @click="handleBack" style="width: 100%; margin-top: 20px; margin-left: 0px;">返回</el-button>
                     </el-form>
                     <!-- <div class="bottom-btn" @click="register">立即注册</div> -->
                 </el-card>
@@ -70,6 +71,11 @@ export default {
                 return false;
             }
         },
+        handleBack() {
+            this.$router.push({
+                path: '/'
+            })
+        },
         register() {
             this.$router.push({
                 path: '/register'
@@ -119,6 +125,7 @@ export default {
             padding: 10px;
         }
     }
+
 }
 </style>
 

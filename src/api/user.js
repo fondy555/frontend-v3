@@ -31,11 +31,11 @@ export const logout = () => {
 }
 
 // 获取管理员信息
-export const getInfo = (token) => {
+export const getInfo = () => {
   return request({
-    url: '/client/anno/getRoles',
+    url: '/v1/client/getRoles',
     method: 'get',
-    params: { token }
+    // params: { token }
   })
 }
 

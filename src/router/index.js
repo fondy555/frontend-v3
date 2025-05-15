@@ -34,14 +34,39 @@ const routes = [
             title: '后台首页'
         },
         children: [
-                        {
-                path: '/info',
-                name: 'Info',
-                component: () => import('@/views/admin/Info.vue'),
-                meta: {
-                    title: '基本信息'
+                {
+                    path: '/info',
+                    name: 'Info',
+                    component: () => import('@/views/admin/Info.vue'),
+                    meta: {
+                        title: '基本信息'
+                    }
+                },
+                {
+                path: '/productList',
+                name: 'productList',
+                component: () => import('@/views/admin/ProductList.vue'),
+                    meta: {
+                        title: '商品列表'
+                    }
+                },
+                {
+                    path: '/product/:id',
+                    name: 'productInfo',
+                    component: () => import('@/views/admin/ProductInfo.vue'),
+                        meta: {
+                            title: '商品信息'
+                        }
+                },
+                {
+                    path: '/ProductEdit',
+                    name: 'productEdit',
+                    component: () => import('@/views/admin/ProductEdit.vue'),
+                        meta: {
+                            title: '添加商品'
+                        }
                 }
-            }
+                
         ]
     }
 ]
