@@ -25,7 +25,7 @@
               />
             </div>
             
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="productModel">型號 <span class="required">*</span></label>
               <input 
                 type="text" 
@@ -34,9 +34,9 @@
                 required 
                 placeholder="請輸入商品型號"
               />
-            </div>
+            </div> -->
             
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="productTag">標籤</label>
               <input 
                 type="text" 
@@ -44,7 +44,7 @@
                 v-model="product.tag" 
                 placeholder="例如：熱銷款、新品、限量版"
               />
-            </div>
+            </div> -->
             
             <div class="form-group">
               <label for="productCategory">商品分類 <span class="required">*</span></label>
@@ -381,12 +381,13 @@
 </template>
 
 <script>
+import { uploadFile, deleteFile } from '@/api/index';
+
 export default {
   data() {
     return {
       product: {
         name: '',
-        model: '',
         tag: '',
         category: '',
         images: [],
@@ -415,12 +416,7 @@ export default {
         status: 'draft',
         sortOrder: 0,
         featured: false,
-        newArrival: false,
-        seo: {
-          title: '',
-          keywords: '',
-          description: ''
-        }
+        newArrival: false
       }
     };
   },
@@ -438,10 +434,22 @@ export default {
     triggerImageUpload() {
       this.$refs.imageUpload.click();
     },
-    handleImageUpload(event) {
+    async handleImageUpload(event) {
       const files = event.target.files;
       if (!files.length) return;
-      
+      const formData = new FormData();
+      formData.append('file', files[0]);
+
+      try {
+       const response = await uploadFile(formData);
+               console.log('文件上传成功:', response);
+        alert('文件上传成功');
+      } catch (error) {
+        console.error('文件上传失败:', error);
+        alert('文件上传失败');
+      }
+
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const reader = new FileReader();
@@ -460,7 +468,17 @@ export default {
       // 清空 input 以便再次選擇相同文件
       event.target.value = '';
     },
-    removeImage(index) {
+    async removeImage(index) {
+      try {
+        const response = await deleteFile(
+          {
+            imageUrl: image.url // 传递图片的 URL 或唯一标识符
+          }
+        );
+      } catch (error) {
+        console.error('刪除圖片失敗:', error);
+        alert('刪除圖片失敗');
+      }
       this.product.images.splice(index, 1);
     },
     setMainImage(index) {
