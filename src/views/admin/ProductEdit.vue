@@ -72,7 +72,7 @@
                 class="image-item"
               >
                 <div class="image-preview">
-                  <img :src="image.url || image" :alt="`商品圖片 ${index + 1}`" />
+                  <img :src="getImageSrc(image)" :alt="`商品圖片 ${index + 1}`" />
                   <div class="image-actions">
                     <button type="button" class="btn-icon" @click="removeImage(index)">
                       <i class="icon">🗑️</i>
@@ -248,7 +248,7 @@
         <!-- 商品描述 -->
         <div class="form-section">
           <h2 class="section-title">商品描述</h2>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="shortDescription">簡短描述 <span class="required">*</span></label>
             <textarea 
               id="shortDescription" 
@@ -257,7 +257,7 @@
               required 
               placeholder="簡短描述商品的主要特點和用途"
             ></textarea>
-          </div>
+          </div> -->
           
           <div class="form-group">
             <label for="longDescription">詳細描述</label>
@@ -373,7 +373,7 @@
         <!-- 表單底部按鈕 -->
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" @click="goBack">取消</button>
-          <button type="submit" class="btn btn-primary">保存商品</button>
+          <button type="submit" @submit.prevent="saveProduct" class="btn btn-primary">保存商品</button>
         </div>
       </form>
     </div>
@@ -382,6 +382,7 @@
 
 <script>
 import { uploadFile, deleteFile } from '@/api/index';
+import { baseImageUrl } from '@/config';
 
 export default {
   data() {
@@ -403,7 +404,7 @@ export default {
         ],
         variants: [],
         features: [''],
-        description: '',
+        // description: '',
         longDescription: '',
         specifications: [
           {
@@ -430,63 +431,74 @@ export default {
     this.generateVariants();
   },
   methods: {
+    
     // 圖片處理
     triggerImageUpload() {
       this.$refs.imageUpload.click();
     },
+    getImageSrc(image) {
+      console.log("getImageSrc" ,baseImageUrl, image.url)
+      return baseImageUrl + image.url;
+    },
     async handleImageUpload(event) {
       const files = event.target.files;
       if (!files.length) return;
+
       const formData = new FormData();
-      formData.append('file', files[0]);
+      // 这里我们创建一个数组来保存每个文件上传后的返回结果
+      const uploadedImages = [];
+
+      // 将每个文件追加到 FormData
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
 
       try {
-       const response = await uploadFile(formData);
-               console.log('文件上传成功:', response);
+        // 上传文件到服务器
+        const response = await uploadFile(formData);
+        console.log('文件上传成功:', response);
         alert('文件上传成功');
+
+        // 假设 response.data 是一个包含上传图片 URL 的数组
+        
+        for (let i = 0; i < response.data.length; i++) {
+          uploadedImages.push({
+            url: response.data[i],  // 使用服务器返回的图片 URL
+            alt: '',
+            file: '' // 保持文件的引用，可能用于后续操作
+          });
+        }
+        // uploadedImages.push({
+        //   url: 'http://localhost:8080/api/v1/getImage?fileName=' + response.data,  // 使用服务器返回的图片 URL
+        //   alt: '',
+        //   file: '' // 保持文件的引用，可能用于后续操作
+        // });
+        
+
+        // 将上传的图片 URL 添加到 product.images 数组
+        this.product.images = [...this.product.images, ...uploadedImages];
+
       } catch (error) {
         console.error('文件上传失败:', error);
         alert('文件上传失败');
       }
 
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-          this.product.images.push({
-            url: e.target.result,
-            alt: '',
-            file: file
-          });
-        };
-        
-        reader.readAsDataURL(file);
-      }
-      
-      // 清空 input 以便再次選擇相同文件
+      console.log(this.product.images)
+      // 清空 input 以便再次选择相同文件
       event.target.value = '';
     },
-    async removeImage(index) {
+
+    removeImage(index){
       try {
-        const response = await deleteFile(
-          {
-            imageUrl: image.url // 传递图片的 URL 或唯一标识符
-          }
-        );
+        deleteFile({
+          'imageUrl': this.product.images[index].url
+        });
+        console.log('圖片刪除成功');
       } catch (error) {
-        console.error('刪除圖片失敗:', error);
-        alert('刪除圖片失敗');
+        console.error('圖片刪除失敗:', error);
       }
       this.product.images.splice(index, 1);
-    },
-    setMainImage(index) {
-      if (index === 0) return;
-      
-      const image = this.product.images[index];
-      this.product.images.splice(index, 1);
-      this.product.images.unshift(image);
+      // console.log(this.product.images);
     },
     
     // 選項處理
@@ -497,6 +509,7 @@ export default {
       });
     },
     removeOption(index) {
+      
       this.product.options.splice(index, 1);
       this.generateVariants();
     },
@@ -509,7 +522,7 @@ export default {
         this.generateVariants();
       }
     },
-    
+
     // 生成商品變體
     generateVariants() {
       // 保存現有變體的價格和庫存信息
@@ -610,7 +623,7 @@ export default {
     },
     validateForm() {
       // 基本驗證
-      if (!this.product.name || !this.product.model || !this.product.category) {
+      if (!this.product.name || !this.product.category) {
         alert('請填寫必填的基本信息！');
         return false;
       }
@@ -690,6 +703,7 @@ export default {
       
       return formData;
     },
+
     resetForm() {
       this.product = {
         name: '',
@@ -727,6 +741,7 @@ export default {
       };
       
       this.generateVariants();
+
     },
     goBack() {
       // 返回上一頁或商品列表頁

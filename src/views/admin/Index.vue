@@ -12,13 +12,13 @@
           @select="select"
           mode="vertical"
         >
-          <el-submenu index="1">
+          <el-sub-menu index="1">
             <template #title>
               <i class="el-icon-setting"></i>
               <span>配置</span>
             </template>
             <!-- 子菜单项可以放在这里，如果有的话 -->
-          </el-submenu>
+          </el-sub-menu>
           <el-menu-item index="/ProductList">
             <template #title>
               <div class="flex-start">
