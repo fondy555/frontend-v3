@@ -68,7 +68,7 @@
             <el-row :gutter="24" class="product-row" style="height: 1000px; overflow-y: auto;">
               <el-col :span="8" :xs="24" :sm="12" :md="8" v-for="product in products" :key="product.id" class="product-col">
                 <el-card class="product-card" @click="viewDetails(product.id)">
-                  <img :src="product.coverImage" alt="暂无图片" class="product-image"/>
+                  <img :src="getImageSrc(product.coverImage)" alt="暂无图片" class="product-image"/>
                   <div class="product-info">
                     <p class="product-name">{{ product.name }}</p>
                     <p class="product-price">$ {{ product.salePrice }}</p>
@@ -89,6 +89,7 @@ import Banner from './components/Banner'
 import Nav from './components/Nav.vue'
 import Footer from './components/Footer.vue'
 import { getAllProducts } from '@/api/index.js'
+import { baseImageUrl } from '@/config';
 
 export default {
     name: 'ProductService',
@@ -167,7 +168,16 @@ export default {
                 return `$${value}`;
             }
             return `${value}件`;
+        },
+        getImageSrc(image) {
+        // 判断image是否是字符串
+        if (typeof image !== 'string') {
+          console.error("Invalid image type, expected string but got:", typeof image);
+          return '';
         }
+        // console.log("getImageSrc", image.startsWith('http'));
+        return image.startsWith('http') ? image : baseImageUrl + image;
+      },
     },
 
 };

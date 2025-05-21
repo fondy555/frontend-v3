@@ -9,7 +9,7 @@
 					<div><i class="el-icon-location-information"></i>地址：{{ footerData.address }}</div>
 				</div>
         <div>
-				<img v-if="footerData" :src="footerData.weChatImage" style="width: 150px; height: 150px"/>
+				<img v-if="footerData" :src="weChatImage" style="width: 150px; height: 150px"/>
         <div style="text-align: center;">wechat</div>
         </div>
 			</div>
@@ -38,19 +38,22 @@ export default {
                 email: 'example@example.com',
                 address: '默認地址',
                 weChatImage: require('@/assets/barcode.png'),
-            }
+            },
+            weChatImage: require('@/assets/barcode.png')
         };
     },
 
     mounted() {
         // 获取缓存的数据
-        const cachedFooterData = localStorage.getItem('footerData');
-        // 如果有缓存的数据，则使用缓存的数据
-        if (cachedFooterData) {
-            this.footerData = JSON.parse(cachedFooterData);
-        } else {
-            this.fetchFooterData();
-        }
+        // const cachedFooterData = localStorage.getItem('footerData');
+        // // 如果有缓存的数据，则使用缓存的数据
+        // if (cachedFooterData) {
+        //     this.footerData = JSON.parse(cachedFooterData);
+        // } else {
+        //     this.fetchFooterData();
+        // }
+        this.fetchFooterData();
+        this.weChatImage = require('@/assets/barcode.png')
     },
 
     methods: {
@@ -70,8 +73,18 @@ export default {
             } catch (error) {
                 console.error('Failed to fetch footer data:', error);
             }
+        },
+        // 判断weChatImage是否是本地路径
+        isLocalPath(path) {
+            return path.startsWith('@/assets/');
         }
+
     },
+    // computed: {
+    //     computedWeChatImage() {
+    //         return this.isLocalPath(this.footerData.weChatImage) ? require(`${this.footerData.weChatImage}`) : this.footerData.weChatImage;
+    //     }
+    // }
 };
 </script>
 

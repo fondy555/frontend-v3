@@ -94,4 +94,12 @@ export async function deleteFile(data) {
     throw error; 
   })
 }
+
+export function saveProduct(data) {
+  return request({
+    url: '/v1/products/addProduct',
+    method: 'post',
+    data 
+  }) 
+}
   

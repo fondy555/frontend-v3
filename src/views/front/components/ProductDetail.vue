@@ -8,7 +8,7 @@
             <!-- 商品圖片區域 -->
             <div class="product-images">
                 <div class="main-image">
-                    <img :src="product.detailImages[selectedImageIndex]" :alt="product.name" />
+                    <img :src="getImageSrc(product.detailImages[selectedImageIndex])" :alt="product.name" />
                 </div>
                 <div class="image-thumbnails">
                     <div 
@@ -18,7 +18,7 @@
                     :class="{ active: selectedImageIndex === index }"
                     @click="selectedImageIndex = index"
                     >
-                    <img :src="image" :alt="`${product.name} 縮圖 ${index + 1}`" />
+                    <img :src="getImageSrc(image)" :alt="`${product.name} 縮圖 ${index + 1}`" />
                     </div>
                 </div>
             </div>
@@ -66,8 +66,8 @@
     
             <!-- 價格顯示 -->
             <div class="price-info">
-                <!-- <span class="current-price">¥{{ currentVariant.price }}</span>
-                <span v-if="currentVariant.originalPrice" class="original-price">
+                <!-- <span class="current-price">HK$ {{ currentVariant.price }} </span> -->
+                <!-- <span v-if="currentVariant.originalPrice" class="original-price">
                 ¥{{ currentVariant.originalPrice }}
                 </span>
                 <span v-if="currentVariant.discount" class="discount-badge">
@@ -76,13 +76,13 @@
             </div>
     
             <!-- 庫存信息 -->
-            <div class="stock-info">
+            <!-- <div class="stock-info">
                 <span v-if="currentVariant.stock > 10" class="in-stock">有貨</span>
                 <span v-else-if="currentVariant.stock > 0" class="low-stock">
                 庫存緊張，僅剩 {{ currentVariant.stock }} 件
                 </span>
                 <span v-else class="out-of-stock">暫時缺貨</span>
-            </div>
+            </div> -->
     
             <div class="divider"></div>
     
@@ -154,6 +154,7 @@
   import Nav from './Nav.vue';
   import Footer from './Footer.vue';
   import { getProductById } from '@/api/index';
+  import { baseImageUrl } from '@/config';
 
   export default {
     data() {
@@ -167,20 +168,7 @@
           detailImages: [],
           options: [],
           category: "",
-          variants: [
-            { options: [0, 0], price: 1299, originalPrice: 1599, discount: 300, stock: 15 },
-            { options: [0, 1], price: 1499, originalPrice: 1799, discount: 300, stock: 8 },
-            { options: [0, 2], price: 1699, originalPrice: 1999, discount: 300, stock: 3 },
-            { options: [1, 0], price: 1299, originalPrice: 1599, discount: 300, stock: 20 },
-            { options: [1, 1], price: 1499, originalPrice: 1799, discount: 300, stock: 12 },
-            { options: [1, 2], price: 1699, originalPrice: 1999, discount: 300, stock: 5 },
-            { options: [2, 0], price: 1399, originalPrice: 1699, discount: 300, stock: 10 },
-            { options: [2, 1], price: 1599, originalPrice: 1899, discount: 300, stock: 6 },
-            { options: [2, 2], price: 1799, originalPrice: 2099, discount: 300, stock: 0 },
-            { options: [3, 0], price: 1399, originalPrice: 1699, discount: 300, stock: 7 },
-            { options: [3, 1], price: 1599, originalPrice: 1899, discount: 300, stock: 4 },
-            { options: [3, 2], price: 1799, originalPrice: 2099, discount: 300, stock: 2 }
-          ],
+          variants: [],
           features: [],
           description: "",
           longDescription: "",
@@ -206,21 +194,6 @@
         
         if (response.code === 0) {
           this.product = response.data;
-          this.product.variants = [
-            { options: [0, 0], price: 1299, originalPrice: 1599, discount: 300, stock: 15 },
-            { options: [0, 1], price: 1499, originalPrice: 1799, discount: 300, stock: 8 },
-            { options: [0, 2], price: 1699, originalPrice: 1999, discount: 300, stock: 3 },
-            { options: [1, 0], price: 1299, originalPrice: 1599, discount: 300, stock: 20 },
-            { options: [1, 1], price: 1499, originalPrice: 1799, discount: 300, stock: 12 },
-            { options: [1, 2], price: 1699, originalPrice: 1999, discount: 300, stock: 5 },
-            { options: [2, 0], price: 1399, originalPrice: 1699, discount: 300, stock: 10 },
-            { options: [2, 1], price: 1599, originalPrice: 1899, discount: 300, stock: 6 },
-            { options: [2, 2], price: 1799, originalPrice: 2099, discount: 300, stock: 0 },
-            { options: [3, 0], price: 1399, originalPrice: 1699, discount: 300, stock: 7 },
-            { options: [3, 1], price: 1599, originalPrice: 1899, discount: 300, stock: 4 },
-            { options: [3, 2], price: 1799, originalPrice: 2099, discount: 300, stock: 2 }
-          ];
-          this.product.longDescription = 'iPad 10配備了10.9英寸Liquid Retina顯示屏，顯示效果出色。內置A14仿生晶片，提供強大的性能和高效的能耗管理。支持Apple Pencil（第1代）和Magic Keyboard Folio，讓你在創作和工作中更加得心應手。擁有1200萬像素後置攝像頭，拍攝效果清晰。配備USB-C接口，支持Wi-Fi 6，連接更加快速穩定。電池續航時間長達10小時，滿足你一整天的使用需求。';
         } else {
             throw new Error(response.message || '获取产品详情失败');
         }
@@ -247,7 +220,16 @@
           return this.product.specifications && this.product.specifications.length > 0;
         }
         return true;
-      }
+      },
+      getImageSrc(image) {
+        // 判断image是否是字符串
+        if (typeof image !== 'string') {
+          console.error("Invalid image type, expected string but got:", typeof image);
+          return '';
+        }
+        // console.log("getImageSrc", image.startsWith('http'));
+        return image.startsWith('http') ? image : baseImageUrl + image;
+      },
     }
   };
   </script>
@@ -310,6 +292,8 @@
   }
   
   .image-thumbnails {
+    /* width: 140px;
+    height: 140px; */
     display: flex;
     gap: 10px;
     overflow-x: auto;

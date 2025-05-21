@@ -67,7 +67,7 @@
           <div class="image-uploader">
             <div class="image-list">
               <div 
-                v-for="(image, index) in product.images" 
+                v-for="(image, index) in product.detailImages" 
                 :key="index" 
                 class="image-item"
               >
@@ -82,12 +82,6 @@
                     </button>
                   </div>
                 </div>
-                <input 
-                  type="text" 
-                  v-model="product.images[index].alt" 
-                  placeholder="圖片描述"
-                  class="image-alt"
-                />
               </div>
               
               <div class="image-upload-placeholder" @click="triggerImageUpload">
@@ -381,7 +375,7 @@
 </template>
 
 <script>
-import { uploadFile, deleteFile } from '@/api/index';
+import { uploadFile, deleteFile, saveProduct } from '@/api/index';
 import { baseImageUrl } from '@/config';
 
 export default {
@@ -391,7 +385,8 @@ export default {
         name: '',
         tag: '',
         category: '',
-        images: [],
+        coverImage: '' ,
+        detailImages: [],
         options: [
           {
             name: '顏色',
@@ -437,8 +432,8 @@ export default {
       this.$refs.imageUpload.click();
     },
     getImageSrc(image) {
-      console.log("getImageSrc" ,baseImageUrl, image.url)
-      return baseImageUrl + image.url;
+      // console.log("getImageSrc" ,baseImageUrl, image)
+      return baseImageUrl + image;
     },
     async handleImageUpload(event) {
       const files = event.target.files;
@@ -462,11 +457,7 @@ export default {
         // 假设 response.data 是一个包含上传图片 URL 的数组
         
         for (let i = 0; i < response.data.length; i++) {
-          uploadedImages.push({
-            url: response.data[i],  // 使用服务器返回的图片 URL
-            alt: '',
-            file: '' // 保持文件的引用，可能用于后续操作
-          });
+          uploadedImages.push(response.data[i]);
         }
         // uploadedImages.push({
         //   url: 'http://localhost:8080/api/v1/getImage?fileName=' + response.data,  // 使用服务器返回的图片 URL
@@ -476,14 +467,19 @@ export default {
         
 
         // 将上传的图片 URL 添加到 product.images 数组
-        this.product.images = [...this.product.images, ...uploadedImages];
+        this.product.detailImages = [...this.product.detailImages, ...uploadedImages];
 
       } catch (error) {
         console.error('文件上传失败:', error);
         alert('文件上传失败');
       }
+      
+      if (this.product.detailImages.length > 0 && ! this.product.coverImage) {
+        this.product.coverImage = this.product.detailImages[0];
+      }
+      
 
-      console.log(this.product.images)
+      console.log(this.product.detailImages)
       // 清空 input 以便再次选择相同文件
       event.target.value = '';
     },
@@ -491,13 +487,17 @@ export default {
     removeImage(index){
       try {
         deleteFile({
-          'imageUrl': this.product.images[index].url
+          'imageUrl': this.product.detailImages[index]
         });
         console.log('圖片刪除成功');
       } catch (error) {
         console.error('圖片刪除失敗:', error);
       }
-      this.product.images.splice(index, 1);
+      this.product.detailImages.splice(index, 1);
+
+      if (this.product.detailImages.length == 0 && this.product.coverImage) {
+        this.product.coverImage = '';
+      }
       // console.log(this.product.images);
     },
     
@@ -616,6 +616,12 @@ export default {
       
       // 模擬 API 調用成功
       alert('商品保存成功！');
+      saveProduct(formData)
+        .then(response => {
+          console.log('商品保存成功:', response);
+          alert('商品保存成功！');
+          // this.resetForm();  
+        })
       
       // 重置表單或跳轉到商品列表頁
       // this.resetForm();
@@ -629,7 +635,7 @@ export default {
       }
       
       // 圖片驗證
-      if (this.product.images.length === 0) {
+      if (this.product.detailImages.length === 0) {
         alert('請至少上傳一張商品圖片！');
         return false;
       }
@@ -663,10 +669,10 @@ export default {
       }
       
       // 描述驗證
-      if (!this.product.description) {
-        alert('請填寫商品簡短描述！');
-        return false;
-      }
+      // if (!this.product.description) {
+      //   alert('請填寫商品簡短描述！');
+      //   return false;
+      // }
       
       return true;
     },
@@ -675,11 +681,11 @@ export default {
       const formData = JSON.parse(JSON.stringify(this.product));
       
       // 處理圖片數據
-      formData.images = this.product.images.map(img => {
+      formData.detailImages = this.product.detailImages.map(img => {
         if (typeof img === 'string') {
-          return { url: img, alt: '' };
+          return img;
         }
-        return { url: img.url, alt: img.alt || '' };
+        return img || '' ;
       });
       
       // 移除空的特點
@@ -710,7 +716,7 @@ export default {
         model: '',
         tag: '',
         category: '',
-        images: [],
+        detailImages: [],
         options: [
           {
             name: '顏色',
