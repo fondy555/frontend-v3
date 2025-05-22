@@ -48,14 +48,15 @@
             
             <div class="form-group">
               <label for="productCategory">商品分類 <span class="required">*</span></label>
-              <select id="productCategory" v-model="product.category" required>
-                <option value="">請選擇分類</option>
-                <option value="smartphone">智能手機</option>
+              <select id="productCategory" v-model="product.categoryId" required>
+                <option value=0>請選擇分類</option>
+                <option v-for="(Category, key) in CategoryMap" :key="key" :value="Category.id">{{ Category.Name }}</option>
+                <!-- <option value="smartphone">智能手機</option>
                 <option value="tablet">平板電腦</option>
                 <option value="headphone">無線耳機</option>
                 <option value="laptop">筆記本電腦</option>
                 <option value="drone">無人機</option>
-                <option value="jewelry">珠寶首飾</option>
+                <option value="jewelry">珠寶首飾</option> -->
               </select>
             </div>
           </div>
@@ -170,9 +171,9 @@
                     <th v-for="(option, index) in product.options" :key="index">
                       {{ option.name }}
                     </th>
-                    <th>價格 <span class="required">*</span></th>
-                    <th>原價</th>
-                    <th>庫存 <span class="required">*</span></th>
+                    <th style="width: 20%;">價格 <span class="required">*</span></th>
+                    <!-- <th>原價</th> -->
+                    <th style="width: 20%;">庫存 <span class="required">*</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,7 +191,7 @@
                         placeholder="售價"
                       />
                     </td>
-                    <td>
+                    <!-- <td>
                       <input 
                         type="number" 
                         v-model.number="variant.originalPrice" 
@@ -198,7 +199,7 @@
                         step="0.01" 
                         placeholder="原價"
                       />
-                    </td>
+                    </td> -->
                     <td>
                       <input 
                         type="number" 
@@ -324,45 +325,22 @@
           </div>
         </div>
 
-        <!-- 發布設置
+        <!-- 發布設置 -->
         <div class="form-section">
           <h2 class="section-title">發布設置</h2>
           <div class="form-grid">
             <div class="form-group">
               <label for="productStatus">商品狀態</label>
               <select id="productStatus" v-model="product.status">
-                <option value="draft">草稿</option>
-                <option value="published">已發布</option>
-                <option value="hidden">隱藏</option>
+                <option value=0>草稿</option>
+                <option value=1>已發布</option>
+                <option value=2>隱藏</option>
               </select>
             </div>
-            
-            <div class="form-group">
-              <label for="productSort">排序權重</label>
-              <input 
-                type="number" 
-                id="productSort" 
-                v-model.number="product.sortOrder" 
-                min="0" 
-                placeholder="數字越大排序越靠前"
-              />
-            </div>
+          
           </div>
           
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" v-model="product.featured" />
-              設為精選商品
-            </label>
-          </div>
-          
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" v-model="product.newArrival" />
-              設為新品上市
-            </label>
-          </div>
-        </div> -->
+        </div> 
 
         <!-- 表單底部按鈕 -->
         <div class="form-actions">
@@ -377,6 +355,7 @@
 <script>
 import { uploadFile, deleteFile, saveProduct } from '@/api/index';
 import { baseImageUrl } from '@/config';
+import { CategoryMap  } from '@/utils/utils';
 
 export default {
   data() {
@@ -384,8 +363,9 @@ export default {
       product: {
         name: '',
         tag: '',
-        category: '',
+        categoryId: 0,
         coverImage: '' ,
+        stockQuantity: 0,
         detailImages: [],
         options: [
           {
@@ -409,11 +389,12 @@ export default {
             ]
           }
         ],
-        status: 'draft',
+        status: 0,
         sortOrder: 0,
         featured: false,
         newArrival: false
-      }
+      },
+      CategoryMap
     };
   },
   watch: {
@@ -531,7 +512,7 @@ export default {
         const key = variant.options.join('-');
         existingVariants[key] = {
           price: variant.price,
-          originalPrice: variant.originalPrice,
+          // originalPrice: variant.originalPrice,
           stock: variant.stock
         };
       });
@@ -553,7 +534,7 @@ export default {
           this.product.variants.push({
             options: [...currentCombination],
             price: existingData.price || 0,
-            originalPrice: existingData.originalPrice || 0,
+            // originalPrice: existingData.originalPrice || 0,
             stock: existingData.stock || 0
           });
           
@@ -610,6 +591,11 @@ export default {
       
       // 處理表單數據
       const formData = this.prepareFormData();
+
+      // 計算總庫存
+      formData.stockQuantity = this.calculateStock()
+      // 獲取最低價格
+      formData.salePrice = this.getLowestPrice();
       
       // 這裡可以添加 API 調用來保存商品
       console.log('保存商品數據:', formData);
@@ -629,7 +615,7 @@ export default {
     },
     validateForm() {
       // 基本驗證
-      if (!this.product.name || !this.product.category) {
+      if (!this.product.name || !this.product.categoryId) {
         alert('請填寫必填的基本信息！');
         return false;
       }
@@ -697,25 +683,14 @@ export default {
         return spec.category.trim() !== '' && spec.items.length > 0;
       });
       
-      // 計算折扣
-      formData.variants.forEach(variant => {
-        if (variant.originalPrice && variant.originalPrice > variant.price) {
-          variant.discount = variant.originalPrice - variant.price;
-        } else {
-          variant.discount = 0;
-          variant.originalPrice = variant.price;
-        }
-      });
-      
       return formData;
     },
 
     resetForm() {
       this.product = {
         name: '',
-        model: '',
         tag: '',
-        category: '',
+        categoryId: 0,
         detailImages: [],
         options: [
           {
@@ -735,15 +710,10 @@ export default {
             ]
           }
         ],
-        status: 'draft',
+        status: 0,
         sortOrder: 0,
         featured: false,
         newArrival: false,
-        seo: {
-          title: '',
-          keywords: '',
-          description: ''
-        }
       };
       
       this.generateVariants();
@@ -753,7 +723,19 @@ export default {
       // 返回上一頁或商品列表頁
       // this.$router.push('/admin/products');
       alert('操作已取消');
-    }
+    },
+    calculateStock() {
+      let totalStock = 0;
+      this.product.variants.forEach(variant => {
+        totalStock += variant.stock;
+      });
+      return totalStock;
+    },
+    getLowestPrice() {
+      const prices = this.product.variants.map(variant => variant.price);
+      return Math.min(...prices);
+    },
+
   }
 };
 </script>

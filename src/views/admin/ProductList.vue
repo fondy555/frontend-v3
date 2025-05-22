@@ -29,12 +29,7 @@
             <label>分類</label>
             <select v-model="filters.category" @change="applyFilters">
               <option value="">全部分類</option>
-              <option value="smartphone">智能手機</option>
-              <option value="tablet">平板電腦</option>
-              <option value="headphone">無線耳機</option>
-              <option value="laptop">筆記本電腦</option>
-              <option value="drone">無人機</option>
-              <option value="jewelry">珠寶首飾</option>
+              <option v-for="(Category, key) in CategoryMap" :key="key" :value="Category.NameEn">{{ Category.Name }}</option>
             </select>
           </div>
           
@@ -42,13 +37,13 @@
             <label>狀態</label>
             <select v-model="filters.status" @change="applyFilters">
               <option value="">全部狀態</option>
-              <option value="published">已發布</option>
-              <option value="draft">草稿</option>
-              <option value="hidden">隱藏</option>
+              <option value="1">已發布</option>
+              <option value="0">草稿</option>
+              <option value="2">隱藏</option>
             </select>
           </div>
           
-          <div class="filter-group">
+          <!-- <div class="filter-group">
             <label>庫存</label>
             <select v-model="filters.stock" @change="applyFilters">
               <option value="">全部</option>
@@ -56,18 +51,7 @@
               <option value="lowstock">庫存緊張</option>
               <option value="outofstock">缺貨</option>
             </select>
-          </div>
-          
-          <div class="filter-group">
-            <label>標籤</label>
-            <select v-model="filters.tag" @change="applyFilters">
-              <option value="">全部標籤</option>
-              <option value="new">新品</option>
-              <option value="hot">熱銷款</option>
-              <option value="featured">精選</option>
-              <option value="limited">限量版</option>
-            </select>
-          </div>
+          </div> -->
           
           <button class="btn btn-outline btn-sm" @click="resetFilters">
             重置篩選
@@ -109,7 +93,7 @@
                   {{ sortDirection === 'asc' ? '↑' : '↓' }}
                 </span>
               </th>
-              <th @click="sortBy('price')">
+              <th @click="sortBy('price')" style="width: 10%;">
                 價格
                 <span class="sort-icon" v-if="sortField === 'price'">
                   {{ sortDirection === 'asc' ? '↑' : '↓' }}
@@ -147,32 +131,32 @@
               </td>
               <td class="image-cell">
                 <div class="product-image">
-                  <img :src="product.image" :alt="product.name" />
+                  <img :src="getImageSrc(product.coverImage)" :alt="product.name" />
                 </div>
               </td>
               <td class="product-info-cell">
                 <div class="product-name">{{ product.name }}</div>
-                <div class="product-model">型號: {{ product.model }}</div>
-                <div class="product-tags">
+                <!-- <div class="product-model">型號: {{ product.model }}</div> -->
+                <!-- <div class="product-tags">
                   <span 
                     v-for="(tag, index) in product.tags" 
                     :key="index" 
                     class="tag"
                     :class="'tag-' + tag.toLowerCase()"
-                  >
-                    {{ tag }}
-                  </span>
-                </div>
+                  > -->
+                    <!-- {{ tag }} -->
+                  <!-- </span> -->
+                <!-- </div> -->
               </td>
               <td>
                 <div class="price-info">
-                  <div class="current-price">¥{{ product.price }}</div>
-                  <div class="original-price" v-if="product.originalPrice">¥{{ product.originalPrice }}</div>
+                  <div class="current-price">{{ product.salePrice }}</div>
+                  <!-- <div class="original-price" v-if="product.originalPrice">{{ product.originalPrice }}</div> -->
                 </div>
-              </td>
+              </td> 
               <td>
                 <div class="stock-info" :class="getStockClass(product.stock)">
-                  {{ getStockLabel(product.stock) }}
+                  {{ getStockLabel(product.stockQuantity) }}
                 </div>
               </td>
               <td>
@@ -180,7 +164,7 @@
                   {{ getStatusLabel(product.status) }}
                 </div>
               </td>
-              <td>{{ formatDate(product.createdAt) }}</td>
+              <td>{{ formatDate(product.createTime) }}</td>
               <td class="actions-cell">
                 <div class="action-buttons">
                   <button class="btn-icon" title="查看" @click="viewProduct(product.id)">
@@ -296,21 +280,39 @@
 </template>
 
 <script>
+import { getAllProducts } from '@/api/index.js'
+import { baseImageUrl } from '@/config';
+import { getCategoryName, CategoryMap, getCategoryNameEn  } from '@/utils/utils';
+
+
 export default {
   data() {
     return {
       // 商品列表數據
-      products: [],
+      products: [
+        {
+          id: 2,
+          name: 'Ultra Tab 專業平板',
+          // model: 'UT-2023',
+          description: '',
+          image: '',
+          stock: 0,
+          status: 1,
+          category: '',
+          createdAt: ''
+        }
+      ],
       
       // 篩選條件
       filters: {
         keyword: '',
         category: '',
-        status: '',
+        status: "",
         stock: '',
         tag: ''
       },
-      
+
+      CategoryMap,
       // 排序設置
       sortField: 'createdAt',
       sortDirection: 'desc',
@@ -341,19 +343,23 @@ export default {
         const keyword = this.filters.keyword.toLowerCase();
         result = result.filter(product => 
           product.name.toLowerCase().includes(keyword) || 
-          product.model.toLowerCase().includes(keyword) || 
-          (product.description && product.description.toLowerCase().includes(keyword))
+          product.model.toLowerCase().includes(keyword)
         );
       }
       
       // 應用分類篩選
       if (this.filters.category) {
-        result = result.filter(product => product.category === this.filters.category);
+        console.log("this.filters.category: ", this.filters.category)
+        result = result.filter(product => getCategoryNameEn(product.categoryId) === this.filters.category);
       }
       
       // 應用狀態篩選
       if (this.filters.status) {
+        console.log("this.filters.status: ", this.filters.status)
+        console.log("result: ", typeof(result[0].status),  typeof(this.filters.status))
+        // console.log("this.product.status: ",  this.product.status)
         result = result.filter(product => product.status === this.filters.status);
+        console.log("result: ", result)
       }
       
       // 應用庫存篩選
@@ -462,182 +468,65 @@ export default {
   },
   mounted() {
     // 加載模擬數據
-    this.loadProducts();
+    this.fetchProducts();
   },
   methods: {
     // 加載商品數據
     loadProducts() {
+
       // 模擬從 API 獲取數據
       this.products = [
         {
           id: 1,
           name: 'Pro X 旗艦智能手機',
-          model: 'PX-2023',
+          // model: 'PX-2023',
           description: '頂級旗艦智能手機，搭載最新處理器和高清攝像頭',
           image: 'https://placehold.co/100x100/eee/999?text=Pro X',
-          price: 6999,
-          originalPrice: 7999,
+          // price: 6999,
+          // originalPrice: 7999,
           stock: 156,
-          status: 'published',
+          status: "1",
           category: 'smartphone',
-          tags: ['熱銷款', '精選'],
+          // tags: ['熱銷款', '精選'],
           createdAt: '2023-10-15T08:30:00Z'
         },
         {
           id: 2,
           name: 'Ultra Tab 專業平板',
-          model: 'UT-2023',
+          // model: 'UT-2023',
           description: '專業級平板電腦，適合創意工作者和專業人士',
           image: 'https://placehold.co/100x100/eee/999?text=Ultra Tab',
-          price: 4999,
-          originalPrice: 5499,
+          // price: '-',
+          // originalPrice: 5499,
           stock: 89,
-          status: 'published',
+          status: "1",
           category: 'tablet',
-          tags: ['新品'],
+          // tags: ['新品'],
           createdAt: '2023-11-05T10:15:00Z'
         },
-        {
-          id: 3,
-          name: 'AirSound Pro 無線耳機',
-          model: 'AS-Pro',
-          description: '高品質無線耳機，提供卓越的音質和降噪體驗',
-          image: 'https://placehold.co/100x100/eee/999?text=AirSound',
-          price: 1299,
-          originalPrice: 1599,
-          stock: 210,
-          status: 'published',
-          category: 'headphone',
-          tags: ['熱銷款'],
-          createdAt: '2023-09-20T14:45:00Z'
-        },
-        {
-          id: 4,
-          name: 'BookPro 輕薄筆記本',
-          model: 'BP-2023',
-          description: '超輕薄筆記本電腦，強大性能與便攜性的完美結合',
-          image: 'https://placehold.co/100x100/eee/999?text=BookPro',
-          price: 8999,
-          originalPrice: null,
-          stock: 45,
-          status: 'published',
-          category: 'laptop',
-          tags: ['精選'],
-          createdAt: '2023-08-12T09:20:00Z'
-        },
-        {
-          id: 5,
-          name: 'SkyView 4K 航拍無人機',
-          model: 'SV-4K',
-          description: '專業級航拍無人機，4K高清攝像，穩定飛行',
-          image: 'https://placehold.co/100x100/eee/999?text=SkyView',
-          price: 5999,
-          originalPrice: 6599,
-          stock: 28,
-          status: 'published',
-          category: 'drone',
-          tags: ['熱銷款'],
-          createdAt: '2023-07-30T16:10:00Z'
-        },
-        {
-          id: 6,
-          name: 'SmartRing 智能戒指',
-          model: 'SR-2023',
-          description: '時尚智能戒指，健康監測與時尚設計的完美結合',
-          image: 'https://placehold.co/100x100/eee/999?text=SmartRing',
-          price: 1999,
-          originalPrice: 2299,
-          stock: 15,
-          status: 'published',
-          category: 'jewelry',
-          tags: ['限量版'],
-          createdAt: '2023-11-10T11:30:00Z'
-        },
-        {
-          id: 7,
-          name: 'Pro X Lite 輕量智能手機',
-          model: 'PX-Lite',
-          description: '輕量版旗艦手機，保留核心功能，價格更親民',
-          image: 'https://placehold.co/100x100/eee/999?text=Pro X Lite',
-          price: 4999,
-          originalPrice: 5499,
-          stock: 0,
-          status: 'published',
-          category: 'smartphone',
-          tags: ['新品'],
-          createdAt: '2023-10-25T13:45:00Z'
-        },
-        {
-          id: 8,
-          name: 'Ultra Tab Mini 迷你平板',
-          model: 'UT-Mini',
-          description: '小巧便攜的平板電腦，隨時隨地提高生產力',
-          image: 'https://placehold.co/100x100/eee/999?text=Ultra Tab Mini',
-          price: 3499,
-          originalPrice: 3999,
-          stock: 5,
-          status: 'draft',
-          category: 'tablet',
-          tags: [],
-          createdAt: '2023-11-15T09:00:00Z'
-        },
-        {
-          id: 9,
-          name: 'AirSound Lite 入門耳機',
-          model: 'AS-Lite',
-          description: '入門級無線耳機，優質音質，親民價格',
-          image: 'https://placehold.co/100x100/eee/999?text=AirSound Lite',
-          price: 699,
-          originalPrice: 899,
-          stock: 320,
-          status: 'published',
-          category: 'headphone',
-          tags: ['熱銷款'],
-          createdAt: '2023-09-05T10:30:00Z'
-        },
-        {
-          id: 10,
-          name: 'BookAir 超輕筆記本',
-          model: 'BA-2023',
-          description: '超輕薄設計，長效電池續航，隨時隨地辦公',
-          image: 'https://placehold.co/100x100/eee/999?text=BookAir',
-          price: 6999,
-          originalPrice: 7599,
-          stock: 0,
-          status: 'hidden',
-          category: 'laptop',
-          tags: [],
-          createdAt: '2023-08-20T15:20:00Z'
-        },
-        {
-          id: 11,
-          name: 'MiniDrone 迷你無人機',
-          model: 'MD-2023',
-          description: '口袋大小的無人機，隨時捕捉精彩瞬間',
-          image: 'https://placehold.co/100x100/eee/999?text=MiniDrone',
-          price: 1999,
-          originalPrice: 2299,
-          stock: 42,
-          status: 'published',
-          category: 'drone',
-          tags: ['新品'],
-          createdAt: '2023-10-01T14:00:00Z'
-        },
-        {
-          id: 12,
-          name: 'DiamondTech 鑽石項鏈',
-          model: 'DT-2023',
-          description: '智能鑽石項鏈，奢華與科技的完美結合',
-          image: 'https://placehold.co/100x100/eee/999?text=DiamondTech',
-          price: 9999,
-          originalPrice: 12999,
-          stock: 8,
-          status: 'published',
-          category: 'jewelry',
-          tags: ['限量版', '精選'],
-          createdAt: '2023-11-08T16:45:00Z'
-        }
       ];
+    },
+
+    fetchProducts() {
+      getAllProducts().then(response => {
+            this.products = response.data; // 访问response.data
+        }).catch(error => {
+            console.error('Failed to fetch products:', error);
+        });
+    },
+    getCategoryName(categoryId) {
+        // 判断categoryId是否在CategoryMap中
+        return  getCategoryName(categoryId) 
+    },
+
+    getImageSrc(image) {
+      // 判断image是否是字符串
+      if (typeof image !== 'string') {
+        console.error("Invalid image type, expected string but got:", typeof image);
+        return '';
+      }
+      // console.log("getImageSrc", image.startsWith('http'));
+      return image.startsWith('http') ? image : baseImageUrl + image;
     },
     
     // 搜索防抖
@@ -658,7 +547,7 @@ export default {
       this.filters = {
         keyword: '',
         category: '',
-        status: '',
+        status: "",
         stock: '',
         tag: ''
       };
@@ -779,7 +668,7 @@ export default {
           ...product,
           id: this.products.length + 1,
           name: `${product.name} (複製)`,
-          status: 'draft',
+          status: "0",
           createdAt: new Date().toISOString()
         };
         this.products.push(newProduct);
@@ -828,9 +717,9 @@ export default {
     
     getStatusLabel(status) {
       switch (status) {
-        case 'published': return '已發布';
-        case 'draft': return '草稿';
-        case 'hidden': return '隱藏';
+        case "1": return '已發布';
+        case "0": return '草稿';
+        case "2": return '隱藏';
         default: return status;
       }
     },
@@ -844,7 +733,7 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       });
-    }
+    },
   }
 };
 </script>

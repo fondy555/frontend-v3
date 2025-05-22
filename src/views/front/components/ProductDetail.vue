@@ -40,7 +40,7 @@
             </div>
     
             <h1 class="product-title">{{ product.name }}</h1>
-            <p class="product-model">類型: {{ product.category }}</p>
+            <p class="product-model">類型: {{ getCategoryName(product.categoryId) }}</p>
     
             <!-- 商品規格選擇 -->
             <div class="product-options">
@@ -155,6 +155,7 @@
   import Footer from './Footer.vue';
   import { getProductById } from '@/api/index';
   import { baseImageUrl } from '@/config';
+  import { getCategoryName } from '@/utils/utils';
 
   export default {
     data() {
@@ -174,6 +175,7 @@
           longDescription: "",
           specifications: []
         },
+
         tabs: ['產品描述', '規格參數'],
         activeTab: 0,
         selectedImageIndex: 0,
@@ -230,6 +232,10 @@
         // console.log("getImageSrc", image.startsWith('http'));
         return image.startsWith('http') ? image : baseImageUrl + image;
       },
+      getCategoryName(categoryId) {
+        // 判断categoryId是否在CategoryMap中
+        return  getCategoryName(categoryId) 
+      } 
     }
   };
   </script>
