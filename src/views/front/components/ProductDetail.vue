@@ -153,9 +153,8 @@
   <script>
   import Nav from './Nav.vue';
   import Footer from './Footer.vue';
-  import { getProductById } from '@/api/index';
-  import { baseImageUrl } from '@/config';
-  import { getCategoryName } from '@/utils/utils';
+  import { getProductById } from '@/api/product';
+  import { getCategoryName,  getImageSrc} from '@/utils/utils';
 
   export default {
     data() {
@@ -190,9 +189,9 @@
         try {
         const productId = this.$route.params.id;
         // const productId = 1;
-        console.log('Fetching product with ID:', productId);
+        // console.log('Fetching product with ID:', productId);
         const response = await getProductById(productId);
-        console.log('Product data received:', response);
+        // console.log('Product data received:', response);
         
         if (response.code === 0) {
           this.product = response.data;
@@ -224,13 +223,7 @@
         return true;
       },
       getImageSrc(image) {
-        // 判断image是否是字符串
-        if (typeof image !== 'string') {
-          console.error("Invalid image type, expected string but got:", typeof image);
-          return '';
-        }
-        // console.log("getImageSrc", image.startsWith('http'));
-        return image.startsWith('http') ? image : baseImageUrl + image;
+        return getImageSrc(image)
       },
       getCategoryName(categoryId) {
         // 判断categoryId是否在CategoryMap中

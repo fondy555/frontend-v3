@@ -1,7 +1,6 @@
 import {login, logout, getInfo} from '@/api/user'
 import {getToken, setToken, removeToken} from '@/utils/auth'
 import router, {resetRouter} from '@/router'
-// import { id } from 'element-plus/es/locale'
 
 // 初始状态
 const state = {

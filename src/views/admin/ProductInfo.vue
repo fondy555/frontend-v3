@@ -37,7 +37,7 @@
           </div>
           <div class="thumbnail-list">
             <div 
-              v-for="(image, index) in product.images" 
+              v-for="(image, index) in product.detailImages" 
               :key="index" 
               class="thumbnail" 
               :class="{ active: currentImageIndex === index }"
@@ -51,7 +51,7 @@
         <div class="product-info">
           <div class="product-header">
             <h2 class="product-name">{{ product.name }}</h2>
-            <div class="product-model">型號: {{ product.model }}</div>
+            <!-- <div class="product-model">型號: {{ product.model }}</div>
             
             <div class="product-tags" v-if="product.tags && product.tags.length">
               <span 
@@ -62,40 +62,40 @@
               >
                 {{ tag }}
               </span>
-            </div>
+            </div> -->
           </div>
           
           <div class="info-section">
             <div class="info-label">分類</div>
-            <div class="info-value">{{ getCategoryName(product.category) }}</div>
+            <div class="info-value">{{ getCategoryName(product.categoryId) }}</div>
           </div>
           
           <div class="info-section">
             <div class="info-label">價格</div>
             <div class="info-value price-info">
-              <span class="current-price">¥{{ product.price }}</span>
-              <span class="original-price" v-if="product.originalPrice">¥{{ product.originalPrice }}</span>
+              <span class="current-price">HK${{ product.salePrice }}</span>
+              <!-- <span class="original-price" v-if="product.originalPrice">¥{{ product.originalPrice }}</span>
               <span class="discount" v-if="product.originalPrice">
                 ({{ calculateDiscount(product.price, product.originalPrice) }}% 折扣)
-              </span>
+              </span> -->
             </div>
           </div>
           
           <div class="info-section">
             <div class="info-label">庫存</div>
             <div class="info-value stock-info" :class="getStockClass(product.stock)">
-              {{ getStockLabel(product.stock) }}
+              {{ getStockLabel(product.stockQuantity) }}
             </div>
           </div>
           
           <div class="info-section">
             <div class="info-label">創建時間</div>
-            <div class="info-value">{{ formatDate(product.createdAt) }}</div>
+            <div class="info-value">{{ formatDate(product.createTime) }}</div>
           </div>
           
-          <div class="info-section" v-if="product.updatedAt">
+          <div class="info-section" v-if="product.updateTime">
             <div class="info-label">最後更新</div>
-            <div class="info-value">{{ formatDate(product.updatedAt) }}</div>
+            <div class="info-value">{{ formatDate(product.updateTime) }}</div>
           </div>
         </div>
       </div>
@@ -105,9 +105,6 @@
         <h3 class="section-title">商品描述</h3>
         <div class="section-content">
           <p class="product-description">{{ product.description }}</p>
-          <div class="product-long-description" v-if="product.longDescription">
-            <div v-html="formatDescription(product.longDescription)"></div>
-          </div>
         </div>
       </div>
       
@@ -148,7 +145,7 @@
       </div>
       
       <div class="content-section" v-if="product.variants && product.variants.length">
-        <h3 class="section-title">商品變體</h3>
+        <h3 class="section-title">商品庫存</h3>
         <div class="section-content">
           <div class="variants-table-container">
             <table class="variants-table">
@@ -158,7 +155,7 @@
                     {{ option.name }}
                   </th>
                   <th>價格</th>
-                  <th>原價</th>
+                  <!-- <th>原價</th> -->
                   <th>庫存</th>
                 </tr>
               </thead>
@@ -167,11 +164,11 @@
                   <td v-for="(optionIndex, oIndex) in variant.options" :key="oIndex">
                     {{ product.options[oIndex].values[optionIndex] }}
                   </td>
-                  <td class="price-cell">¥{{ variant.price }}</td>
-                  <td class="original-price-cell">
+                  <td class="price-cell">HK${{ variant.price }}</td>
+                  <!-- <td class="original-price-cell">
                     <span v-if="variant.originalPrice">¥{{ variant.originalPrice }}</span>
                     <span v-else>-</span>
-                  </td>
+                  </td> -->
                   <td :class="getStockClass(variant.stock)">
                     {{ variant.stock }}
                   </td>
@@ -204,55 +201,7 @@
         </div>
       </div>
 
-      <!-- SEO 信息 -->
-      <div class="content-section">
-        <h3 class="section-title">SEO 設置</h3>
-        <div class="section-content">
-          <div class="seo-info">
-            <div class="info-row">
-              <div class="info-label">Meta 標題</div>
-              <div class="info-value">{{ product.seo?.title || product.name }}</div>
-            </div>
-            <div class="info-row">
-              <div class="info-label">Meta 關鍵詞</div>
-              <div class="info-value">{{ product.seo?.keywords || '-' }}</div>
-            </div>
-            <div class="info-row">
-              <div class="info-label">Meta 描述</div>
-              <div class="info-value">{{ product.seo?.description || product.description }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 其他設置 -->
-      <div class="content-section">
-        <h3 class="section-title">其他設置</h3>
-        <div class="section-content">
-          <div class="settings-grid">
-            <div class="setting-item">
-              <div class="setting-label">精選商品</div>
-              <div class="setting-value">
-                <span class="status-indicator" :class="{ active: product.featured }">
-                  {{ product.featured ? '是' : '否' }}
-                </span>
-              </div>
-            </div>
-            <div class="setting-item">
-              <div class="setting-label">新品上市</div>
-              <div class="setting-value">
-                <span class="status-indicator" :class="{ active: product.newArrival }">
-                  {{ product.newArrival ? '是' : '否' }}
-                </span>
-              </div>
-            </div>
-            <div class="setting-item">
-              <div class="setting-label">排序權重</div>
-              <div class="setting-value">{{ product.sortOrder || 0 }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
 
     <!-- 加載中狀態 -->
@@ -274,6 +223,9 @@
 </template>
 
 <script>
+import { getProductById } from '@/api/product';
+import { getCategoryName } from '@/utils/utils';
+
 export default {
   data() {
     return {
@@ -283,10 +235,10 @@ export default {
   },
   computed: {
     currentImage() {
-      if (!this.product || !this.product.images || this.product.images.length === 0) {
+      if (!this.product || !this.product.detailImages || this.product.detailImages.length === 0) {
         return 'https://placehold.co/400x400/eee/999?text=無圖片';
       }
-      return this.product.images[this.currentImageIndex];
+      return this.product.detailImages[this.currentImageIndex];
     }
   },
   mounted() {
@@ -294,168 +246,185 @@ export default {
     this.loadProductData();
   },
   methods: {
-    loadProductData() {
+    async loadProductData() {
+        try {
+        const productId = this.$route.params.id;
+        // const productId = 1;
+        // console.log('Fetching product with ID:', productId);
+        const response = await getProductById(productId);
+        // console.log('Product data received:', response);
+        
+        if (response.code === 0) {
+          this.product = response.data;
+        } else {
+            throw new Error(response.message || '获取产品详情失败');
+        }
+        } catch (error) {
+        console.error('获取产品详情失败:', error);
+        this.error = '获取产品详情失败，请稍后再试';
+        // 可以添加更多的错误处理逻辑，比如显示一个错误提示
+        }
       // 模擬 API 請求延遲
-      setTimeout(() => {
-        // 模擬商品數據
-        this.product = {
-          id: 1,
-          name: 'Pro X 旗艦智能手機',
-          model: 'PX-2023',
-          description: '頂級旗艦智能手機，搭載最新處理器和高清攝像頭',
-          longDescription: `Pro X 旗艦智能手機是我們最新推出的頂級產品，代表了當前智能手機技術的巔峰水平。\n\n搭載最新一代的驍龍8處理器，配合12GB大內存和512GB超大存儲空間，無論是日常使用還是高強度遊戲，都能輕鬆應對。\n\n6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率，HDR10+認證，帶來震撼的視覺體驗。\n\n後置四攝系統，包括一個108MP主攝、一個50MP超廣角、一個12MP長焦和一個ToF深感鏡頭，支持8K視頻錄製和專業模式拍攝。`,
-          images: [
-            'https://placehold.co/600x600/eee/999?text=Pro X 正面',
-            'https://placehold.co/600x600/eee/999?text=Pro X 背面',
-            'https://placehold.co/600x600/eee/999?text=Pro X 側面',
-            'https://placehold.co/600x600/eee/999?text=Pro X 細節'
-          ],
-          price: 6999,
-          originalPrice: 7999,
-          stock: 156,
-          status: 'published',
-          category: 'smartphone',
-          tags: ['熱銷款', '精選'],
-          createdAt: '2023-10-15T08:30:00Z',
-          updatedAt: '2023-11-20T14:45:00Z',
-          features: [
-            '6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率',
-            '最新一代驍龍8處理器，12GB+512GB大內存大存儲',
-            '108MP主攝+50MP超廣角+12MP長焦+ToF深感四攝系統',
-            '5000mAh大電池，支持65W超級快充和15W無線充電',
-            'IP68防水防塵，支持人臉識別和屏下指紋識別'
-          ],
-          options: [
-            {
-              name: '顏色',
-              values: ['星空黑', '極光銀', '暗夜綠']
-            },
-            {
-              name: '存儲容量',
-              values: ['128GB', '256GB', '512GB']
-            }
-          ],
-          variants: [
-            {
-              options: [0, 0], // 星空黑, 128GB
-              price: 5999,
-              originalPrice: 6599,
-              stock: 45
-            },
-            {
-              options: [0, 1], // 星空黑, 256GB
-              price: 6499,
-              originalPrice: 7099,
-              stock: 32
-            },
-            {
-              options: [0, 2], // 星空黑, 512GB
-              price: 6999,
-              originalPrice: 7999,
-              stock: 18
-            },
-            {
-              options: [1, 0], // 極光銀, 128GB
-              price: 5999,
-              originalPrice: 6599,
-              stock: 37
-            },
-            {
-              options: [1, 1], // 極光銀, 256GB
-              price: 6499,
-              originalPrice: 7099,
-              stock: 29
-            },
-            {
-              options: [1, 2], // 極光銀, 512GB
-              price: 6999,
-              originalPrice: 7999,
-              stock: 15
-            },
-            {
-              options: [2, 0], // 暗夜綠, 128GB
-              price: 5999,
-              originalPrice: 6599,
-              stock: 0
-            },
-            {
-              options: [2, 1], // 暗夜綠, 256GB
-              price: 6499,
-              originalPrice: 7099,
-              stock: 8
-            },
-            {
-              options: [2, 2], // 暗夜綠, 512GB
-              price: 6999,
-              originalPrice: 7999,
-              stock: 12
-            }
-          ],
-          specifications: [
-            {
-              category: '基本規格',
-              items: [
-                { name: '型號', value: 'PX-2023' },
-                { name: '上市日期', value: '2023年10月' },
-                { name: '操作系統', value: 'Android 13' },
-                { name: '處理器', value: '驍龍8處理器' },
-                { name: '尺寸', value: '162.5 x 75.8 x 8.3 mm' },
-                { name: '重量', value: '198g' }
-              ]
-            },
-            {
-              category: '顯示屏',
-              items: [
-                { name: '屏幕尺寸', value: '6.7英寸' },
-                { name: '屏幕類型', value: 'AMOLED' },
-                { name: '分辨率', value: '3200 x 1440 像素' },
-                { name: '刷新率', value: '120Hz自適應' },
-                { name: '亮度', value: '1500尼特（峰值）' },
-                { name: '玻璃材質', value: '康寧大猩猩玻璃7' }
-              ]
-            },
-            {
-              category: '相機',
-              items: [
-                { name: '後置主攝', value: '108MP，f/1.8光圈，OIS光學防抖' },
-                { name: '超廣角', value: '50MP，f/2.2光圈，120°視角' },
-                { name: '長焦', value: '12MP，f/2.4光圈，3x光學變焦' },
-                { name: '深感鏡頭', value: 'ToF 3D深感鏡頭' },
-                { name: '前置攝像頭', value: '32MP，f/2.0光圈，自動對焦' },
-                { name: '視頻錄製', value: '8K@24fps，4K@60fps，1080p@240fps' }
-              ]
-            },
-            {
-              category: '電池與充電',
-              items: [
-                { name: '電池容量', value: '5000mAh' },
-                { name: '有線充電', value: '65W超級快充' },
-                { name: '無線充電', value: '15W Qi無線充電' },
-                { name: '反向無線充電', value: '支持，5W' }
-              ]
-            },
-            {
-              category: '連接與網絡',
-              items: [
-                { name: '5G', value: '支持SA/NSA雙模5G' },
-                { name: 'Wi-Fi', value: 'Wi-Fi 6E' },
-                { name: '藍牙', value: '藍牙5.3' },
-                { name: 'NFC', value: '支持' },
-                { name: 'GPS', value: 'GPS, GLONASS, BeiDou, Galileo' },
-                { name: '接口', value: 'USB Type-C 3.2' }
-              ]
-            }
-          ],
-          seo: {
-            title: 'Pro X 旗艦智能手機 - 2023年最新旗艦手機',
-            keywords: '旗艦手機,Pro X,智能手機,高端手機,108MP相機,5G手機',
-            description: 'Pro X 旗艦智能手機，搭載最新驍龍8處理器，108MP四攝系統，5000mAh大電池，帶來極致的性能體驗和攝影體驗。'
-          },
-          featured: true,
-          newArrival: false,
-          sortOrder: 100
-        };
-      }, 800);
+      // setTimeout(() => {
+      //   // 模擬商品數據
+      //   this.product = {
+      //     id: 1,
+      //     name: 'Pro X 旗艦智能手機',
+      //     model: 'PX-2023',
+      //     description: '頂級旗艦智能手機，搭載最新處理器和高清攝像頭',
+      //     longDescription: `Pro X 旗艦智能手機是我們最新推出的頂級產品，代表了當前智能手機技術的巔峰水平。\n\n搭載最新一代的驍龍8處理器，配合12GB大內存和512GB超大存儲空間，無論是日常使用還是高強度遊戲，都能輕鬆應對。\n\n6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率，HDR10+認證，帶來震撼的視覺體驗。\n\n後置四攝系統，包括一個108MP主攝、一個50MP超廣角、一個12MP長焦和一個ToF深感鏡頭，支持8K視頻錄製和專業模式拍攝。`,
+      //     images: [
+      //       'https://placehold.co/600x600/eee/999?text=Pro X 正面',
+      //       'https://placehold.co/600x600/eee/999?text=Pro X 背面',
+      //       'https://placehold.co/600x600/eee/999?text=Pro X 側面',
+      //       'https://placehold.co/600x600/eee/999?text=Pro X 細節'
+      //     ],
+      //     price: 6999,
+      //     originalPrice: 7999,
+      //     stock: 156,
+      //     status: 'published',
+      //     category: 'smartphone',
+      //     tags: ['熱銷款', '精選'],
+      //     createdAt: '2023-10-15T08:30:00Z',
+      //     updatedAt: '2023-11-20T14:45:00Z',
+      //     features: [
+      //       '6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率',
+      //       '最新一代驍龍8處理器，12GB+512GB大內存大存儲',
+      //       '108MP主攝+50MP超廣角+12MP長焦+ToF深感四攝系統',
+      //       '5000mAh大電池，支持65W超級快充和15W無線充電',
+      //       'IP68防水防塵，支持人臉識別和屏下指紋識別'
+      //     ],
+      //     options: [
+      //       {
+      //         name: '顏色',
+      //         values: ['星空黑', '極光銀', '暗夜綠']
+      //       },
+      //       {
+      //         name: '存儲容量',
+      //         values: ['128GB', '256GB', '512GB']
+      //       }
+      //     ],
+      //     variants: [
+      //       {
+      //         options: [0, 0], // 星空黑, 128GB
+      //         price: 5999,
+      //         originalPrice: 6599,
+      //         stock: 45
+      //       },
+      //       {
+      //         options: [0, 1], // 星空黑, 256GB
+      //         price: 6499,
+      //         originalPrice: 7099,
+      //         stock: 32
+      //       },
+      //       {
+      //         options: [0, 2], // 星空黑, 512GB
+      //         price: 6999,
+      //         originalPrice: 7999,
+      //         stock: 18
+      //       },
+      //       {
+      //         options: [1, 0], // 極光銀, 128GB
+      //         price: 5999,
+      //         originalPrice: 6599,
+      //         stock: 37
+      //       },
+      //       {
+      //         options: [1, 1], // 極光銀, 256GB
+      //         price: 6499,
+      //         originalPrice: 7099,
+      //         stock: 29
+      //       },
+      //       {
+      //         options: [1, 2], // 極光銀, 512GB
+      //         price: 6999,
+      //         originalPrice: 7999,
+      //         stock: 15
+      //       },
+      //       {
+      //         options: [2, 0], // 暗夜綠, 128GB
+      //         price: 5999,
+      //         originalPrice: 6599,
+      //         stock: 0
+      //       },
+      //       {
+      //         options: [2, 1], // 暗夜綠, 256GB
+      //         price: 6499,
+      //         originalPrice: 7099,
+      //         stock: 8
+      //       },
+      //       {
+      //         options: [2, 2], // 暗夜綠, 512GB
+      //         price: 6999,
+      //         originalPrice: 7999,
+      //         stock: 12
+      //       }
+      //     ],
+      //     specifications: [
+      //       {
+      //         category: '基本規格',
+      //         items: [
+      //           { name: '型號', value: 'PX-2023' },
+      //           { name: '上市日期', value: '2023年10月' },
+      //           { name: '操作系統', value: 'Android 13' },
+      //           { name: '處理器', value: '驍龍8處理器' },
+      //           { name: '尺寸', value: '162.5 x 75.8 x 8.3 mm' },
+      //           { name: '重量', value: '198g' }
+      //         ]
+      //       },
+      //       {
+      //         category: '顯示屏',
+      //         items: [
+      //           { name: '屏幕尺寸', value: '6.7英寸' },
+      //           { name: '屏幕類型', value: 'AMOLED' },
+      //           { name: '分辨率', value: '3200 x 1440 像素' },
+      //           { name: '刷新率', value: '120Hz自適應' },
+      //           { name: '亮度', value: '1500尼特（峰值）' },
+      //           { name: '玻璃材質', value: '康寧大猩猩玻璃7' }
+      //         ]
+      //       },
+      //       {
+      //         category: '相機',
+      //         items: [
+      //           { name: '後置主攝', value: '108MP，f/1.8光圈，OIS光學防抖' },
+      //           { name: '超廣角', value: '50MP，f/2.2光圈，120°視角' },
+      //           { name: '長焦', value: '12MP，f/2.4光圈，3x光學變焦' },
+      //           { name: '深感鏡頭', value: 'ToF 3D深感鏡頭' },
+      //           { name: '前置攝像頭', value: '32MP，f/2.0光圈，自動對焦' },
+      //           { name: '視頻錄製', value: '8K@24fps，4K@60fps，1080p@240fps' }
+      //         ]
+      //       },
+      //       {
+      //         category: '電池與充電',
+      //         items: [
+      //           { name: '電池容量', value: '5000mAh' },
+      //           { name: '有線充電', value: '65W超級快充' },
+      //           { name: '無線充電', value: '15W Qi無線充電' },
+      //           { name: '反向無線充電', value: '支持，5W' }
+      //         ]
+      //       },
+      //       {
+      //         category: '連接與網絡',
+      //         items: [
+      //           { name: '5G', value: '支持SA/NSA雙模5G' },
+      //           { name: 'Wi-Fi', value: 'Wi-Fi 6E' },
+      //           { name: '藍牙', value: '藍牙5.3' },
+      //           { name: 'NFC', value: '支持' },
+      //           { name: 'GPS', value: 'GPS, GLONASS, BeiDou, Galileo' },
+      //           { name: '接口', value: 'USB Type-C 3.2' }
+      //         ]
+      //       }
+      //     ],
+      //     seo: {
+      //       title: 'Pro X 旗艦智能手機 - 2023年最新旗艦手機',
+      //       keywords: '旗艦手機,Pro X,智能手機,高端手機,108MP相機,5G手機',
+      //       description: 'Pro X 旗艦智能手機，搭載最新驍龍8處理器，108MP四攝系統，5000mAh大電池，帶來極致的性能體驗和攝影體驗。'
+      //     },
+      //     featured: true,
+      //     newArrival: false,
+      //     sortOrder: 100
+      //   };
+      // }, 800);
     },
     setCurrentImage(index) {
       this.currentImageIndex = index;
@@ -469,38 +438,31 @@ export default {
       const discount = ((originalPrice - price) / originalPrice) * 100;
       return Math.round(discount);
     },
-    getCategoryName(categoryCode) {
-      const categories = {
-        'smartphone': '智能手機',
-        'tablet': '平板電腦',
-        'headphone': '無線耳機',
-        'laptop': '筆記本電腦',
-        'drone': '無人機',
-        'jewelry': '珠寶首飾'
-      };
-      return categories[categoryCode] || categoryCode;
+    getCategoryName(categoryId) {
+
+      return getCategoryName(categoryId);
     },
     getStatusIcon(status) {
       switch (status) {
-        case 'published': return '✅';
-        case 'draft': return '📝';
-        case 'hidden': return '👁️';
+        case '1': return '✅';
+        case '0': return '📝';
+        case '2': return '👁️';
         default: return '❓';
       }
     },
     getStatusLabel(status) {
       switch (status) {
-        case 'published': return '已發布';
-        case 'draft': return '草稿';
-        case 'hidden': return '隱藏';
+        case '1': return '已發布';
+        case '0': return '草稿';
+        case '2': return '隱藏';
         default: return status;
       }
     },
     getStatusDescription(status) {
       switch (status) {
-        case 'published': return '此商品已發布，對所有用戶可見';
-        case 'draft': return '此商品處於草稿狀態，尚未發布';
-        case 'hidden': return '此商品已被隱藏，對用戶不可見';
+        case '1': return '此商品已發布，對所有用戶可見';
+        case '0': return '此商品處於草稿狀態，尚未發布';
+        case '2': return '此商品已被隱藏，對用戶不可見';
         default: return '';
       }
     },
@@ -741,25 +703,6 @@ body {
   color: #4a5568;
 }
 
-.tag-熱銷款 {
-  background-color: #fed7d7;
-  color: #e53e3e;
-}
-
-.tag-新品 {
-  background-color: #c6f6d5;
-  color: #38a169;
-}
-
-.tag-精選 {
-  background-color: #bee3f8;
-  color: #3182ce;
-}
-
-.tag-限量版 {
-  background-color: #feebc8;
-  color: #dd6b20;
-}
 
 .info-section {
   display: flex;
@@ -970,57 +913,6 @@ body {
   color: #4a5568;
 }
 
-/* SEO 信息 */
-.seo-info {
-  background-color: #f8fafc;
-  border-radius: 6px;
-  padding: 15px;
-}
-
-.info-row {
-  display: flex;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.info-row:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-/* 其他設置 */
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.setting-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.setting-label {
-  font-weight: 500;
-  color: #4a5568;
-}
-
-.status-indicator {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #e2e8f0;
-  color: #4a5568;
-}
-
-.status-indicator.active {
-  background-color: #c6f6d5;
-  color: #38a169;
-}
 
 /* 加載中狀態 */
 .loading-container {

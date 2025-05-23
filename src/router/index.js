@@ -51,20 +51,21 @@ const routes = [
                     }
                 },
                 {
-                    path: '/product/:id',
-                    name: 'productInfo',
+                    path: '/Product/:id',
+                    name: 'product',
+                    // component: () => import('@/views/front/components/ProductDetail.vue'),
                     component: () => import('@/views/admin/ProductInfo.vue'),
                         meta: {
                             title: '商品信息'
                         }
                 },
                 {
-                    path: '/ProductEdit',
+                    path: '/ProductEdit/:id?',
                     name: 'productEdit',
                     component: () => import('@/views/admin/ProductEdit.vue'),
-                        meta: {
-                            title: '添加商品'
-                        }
+                    meta: {
+                        title: '編輯商品'
+                    }
                 }
                 
         ]

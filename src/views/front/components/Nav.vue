@@ -81,12 +81,12 @@ export default {
         this.isLogin = token ? true : false;
 
         if (this.isLogin) {
-          this.getInfo();
-            // this.getInfo(token).then(response => {
-            //     console.log('User info:', response); // 打印用户信息
-            // }).catch(error => {
-            //     console.error('NAV Failed to fetch user info:', error);
-            // });
+          try {
+            this.getInfo();
+          } catch (error) {
+            console.error('获取用户信息失败:', error);
+          }
+          
         }
 
         const cachedFooterData = localStorage.getItem('footerData');

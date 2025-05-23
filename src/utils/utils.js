@@ -1,3 +1,4 @@
+import { baseImageUrl } from '@/config';
 
 export const CategoryMap = {
 
@@ -49,4 +50,24 @@ export function getCategoryNameEn(categoryId) {
   } else {
     return 'Unknown';
   }
+}
+
+// 判斷圖片，獲取對應的鏈接
+export function getImageSrc(image) {
+  try {
+    if (image.startsWith('@/assets')) {
+    // 处理本地资源路径
+    return require(`${image}`);
+    } else if (image.startsWith('http')) {
+      // 处理网络资源路径
+      return image;
+    } else {
+      // 处理相对路径
+      return `${baseImageUrl}${image}`;
+    }
+  } catch (error) {
+    // console.error('Error processing image path:', image);
+    return ''; 
+  }
+
 }

@@ -17,5 +17,8 @@ const getters = {
   isPay: state => state.user.isPay,
   mobile: state => state.user.mobile,
   id: state => state.user.id,
+
+  // 獲取商品
+  product: state => state.product,
 }
 export default getters

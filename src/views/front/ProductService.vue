@@ -88,7 +88,7 @@
 import Banner from './components/Banner'
 import Nav from './components/Nav.vue'
 import Footer from './components/Footer.vue'
-import { getAllProducts } from '@/api/index.js'
+import { getAllProducts } from '@/api/product.js'
 import { baseImageUrl } from '@/config';
 
 export default {

@@ -1,26 +1,7 @@
-// import Vue from 'vue'
-// import Vuex from 'vuex'
 
-// Vue.use(Vuex)
-
-// export default new Vuex.Store({
-//   state: {
-//   },
-//   mutations: {
-//   },
-//   actions: {
-//   },
-//   modules: {
-//   }
-// })
-
-
-// import { createApp } from 'vue'
 import Vuex from 'vuex'
 import getters from './getters'
-// import App from '@/App.vue'
 
-// createApp(App).use(Vuex)
 
 // https://webpack.js.org/guides/dependency-management/#requirecontext
 const modulesFiles = require.context('./modules', false, /\.js$/)

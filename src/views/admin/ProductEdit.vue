@@ -353,11 +353,11 @@
 </template>
 
 <script>
-import { uploadFile, deleteFile, saveProduct } from '@/api/index';
-import { baseImageUrl } from '@/config';
-import { CategoryMap  } from '@/utils/utils';
+import { uploadFile, deleteFile, saveProduct, getProductById } from '@/api/product.js';
+import { CategoryMap, getImageSrc  } from '@/utils/utils';
 
 export default {
+  name: 'ProductEdit',
   data() {
     return {
       product: {
@@ -403,6 +403,17 @@ export default {
       deep: true
     }
   },
+  async created() {
+    // 从路由参数中获取 productId
+    if (this.$route.params.id) {
+      // this.productId = this.$route.params.id;
+      // console.log("productId:  ", this.$route.params.id)
+      const response = await getProductById(this.$route.params.id);
+      console.log("response:  ", response)
+      this.product = response.data;
+      
+    }
+  },
   mounted() {
     this.generateVariants();
   },
@@ -413,8 +424,7 @@ export default {
       this.$refs.imageUpload.click();
     },
     getImageSrc(image) {
-      // console.log("getImageSrc" ,baseImageUrl, image)
-      return baseImageUrl + image;
+      return getImageSrc(image)
     },
     async handleImageUpload(event) {
       const files = event.target.files;
@@ -508,23 +518,32 @@ export default {
     generateVariants() {
       // 保存現有變體的價格和庫存信息
       const existingVariants = {};
-      this.product.variants.forEach(variant => {
+      // console.log("this.product.variants： ", this.product.variants)
+      if (! this.product.variants) {
+        this.product.variants = []; 
+      }
+      if (! this.product.options) {
+        this.product.options = [];
+      }
+
+      console.log("this.product.variants ", this.product.variants)
+      try{
+        this.product.variants.forEach(variant => {
+        // console.log("variant.option: ", variant.options)
         const key = variant.options.join('-');
         existingVariants[key] = {
           price: variant.price,
           // originalPrice: variant.originalPrice,
           stock: variant.stock
         };
-      });
-      
+        });
       // 生成新的變體列表
       const options = this.product.options;
       if (!options.length || options.some(opt => !opt.name || !opt.values.length)) {
         this.product.variants = [];
         return;
       }
-      
-      // 使用遞歸函數生成所有可能的組合
+            // 使用遞歸函數生成所有可能的組合
       const generateCombinations = (optionIndex, currentCombination) => {
         if (optionIndex >= options.length) {
           // 基本情況：已經處理完所有選項
@@ -552,7 +571,12 @@ export default {
       };
       
       this.product.variants = [];
+
       generateCombinations(0, Array(options.length).fill(0));
+      } catch (error) {
+        console.error('生成商品變體失敗:', error);
+        return;
+      }
     },
     
     // 特點處理
@@ -601,7 +625,7 @@ export default {
       console.log('保存商品數據:', formData);
       
       // 模擬 API 調用成功
-      alert('商品保存成功！');
+      // alert('商品保存成功！');
       saveProduct(formData)
         .then(response => {
           console.log('商品保存成功:', response);

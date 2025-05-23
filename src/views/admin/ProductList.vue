@@ -67,8 +67,6 @@
         <div class="bulk-buttons">
           <button class="btn btn-sm" @click="bulkPublish">發布</button>
           <button class="btn btn-sm" @click="bulkHide">隱藏</button>
-          <button class="btn btn-sm" @click="bulkSetFeatured">設為精選</button>
-          <button class="btn btn-sm" @click="bulkRemoveFeatured">取消精選</button>
           <button class="btn btn-sm btn-danger" @click="confirmBulkDelete">刪除</button>
         </div>
       </div>
@@ -111,9 +109,9 @@
                   {{ sortDirection === 'asc' ? '↑' : '↓' }}
                 </span>
               </th>
-              <th @click="sortBy('createdAt')">
+              <th @click="sortBy('createTime')">
                 創建時間
-                <span class="sort-icon" v-if="sortField === 'createdAt'">
+                <span class="sort-icon" v-if="sortField === 'createTime'">
                   {{ sortDirection === 'asc' ? '↑' : '↓' }}
                 </span>
               </th>
@@ -280,7 +278,7 @@
 </template>
 
 <script>
-import { getAllProducts } from '@/api/index.js'
+import { getAllProducts, copyProduct, deleteProduct, deleteProducts } from '@/api/product.js'
 import { baseImageUrl } from '@/config';
 import { getCategoryName, CategoryMap, getCategoryNameEn  } from '@/utils/utils';
 
@@ -299,7 +297,7 @@ export default {
           stock: 0,
           status: 1,
           category: '',
-          createdAt: ''
+          createTime: ''
         }
       ],
       
@@ -314,7 +312,7 @@ export default {
 
       CategoryMap,
       // 排序設置
-      sortField: 'createdAt',
+      sortField: 'createTime',
       sortDirection: 'desc',
       
       // 分頁設置
@@ -488,7 +486,7 @@ export default {
           status: "1",
           category: 'smartphone',
           // tags: ['熱銷款', '精選'],
-          createdAt: '2023-10-15T08:30:00Z'
+          createTime: '2023-10-15T08:30:00Z'
         },
         {
           id: 2,
@@ -502,7 +500,7 @@ export default {
           status: "1",
           category: 'tablet',
           // tags: ['新品'],
-          createdAt: '2023-11-05T10:15:00Z'
+          createTime: '2023-11-05T10:15:00Z'
         },
       ];
     },
@@ -619,29 +617,6 @@ export default {
       this.selectedProducts = [];
     },
     
-    bulkSetFeatured() {
-      this.products = this.products.map(product => {
-        if (this.selectedProducts.includes(product.id)) {
-          const tags = product.tags || [];
-          if (!tags.includes('精選')) {
-            return { ...product, tags: [...tags, '精選'] };
-          }
-        }
-        return product;
-      });
-      this.selectedProducts = [];
-    },
-    
-    bulkRemoveFeatured() {
-      this.products = this.products.map(product => {
-        if (this.selectedProducts.includes(product.id)) {
-          const tags = product.tags || [];
-          return { ...product, tags: tags.filter(tag => tag !== '精選') };
-        }
-        return product;
-      });
-      this.selectedProducts = [];
-    },
     
     confirmBulkDelete() {
       this.deleteMode = 'bulk';
@@ -656,23 +631,27 @@ export default {
     },
     
     editProduct(productId) {
-      // 編輯商品
-      alert(`編輯商品 ID: ${productId}`);
+
+      const product = this.products.find(p => p.id === productId);
+      if (product) {
+        // 儲存商品到 Vuex
+        // this.$store.dispatch('updateProduct', product);
+        // 跳转到编辑页面，并传递商品数据
+        this.$router.push({ 
+          name: 'productEdit',
+          params: { id: productId }
+        });
+      }
     },
     
     duplicateProduct(productId) {
       // 複製商品
       const product = this.products.find(p => p.id === productId);
       if (product) {
-        const newProduct = {
-          ...product,
-          id: this.products.length + 1,
-          name: `${product.name} (複製)`,
-          status: "0",
-          createdAt: new Date().toISOString()
-        };
-        this.products.push(newProduct);
-        alert(`已複製商品: ${newProduct.name}`);
+
+        copyProduct(productId)
+        // this.products.push(newProduct);
+        this.$router.go(0);
       }
     },
     
@@ -684,10 +663,20 @@ export default {
     
     confirmDeleteAction() {
       if (this.deleteMode === 'single' && this.productToDelete) {
+        // console.log("this.productToDelete.id: ", this.productToDelete.id)
         // 刪除單個商品
+        deleteProduct(this.productToDelete.id)
         this.products = this.products.filter(p => p.id !== this.productToDelete.id);
       } else if (this.deleteMode === 'bulk') {
+
         // 批量刪除商品
+        // 遍歷選取的ID
+        const idsToDelete = { ids: [] };
+        this.selectedProducts.forEach(productId => {
+          idsToDelete.ids.push(productId);
+        });
+
+        deleteProducts(idsToDelete)
         this.products = this.products.filter(p => !this.selectedProducts.includes(p.id));
         this.selectedProducts = [];
       }
