@@ -16,7 +16,7 @@
           <input 
             type="text" 
             v-model="filters.keyword" 
-            placeholder="搜索商品名稱、型號或描述" 
+            placeholder="搜索商品名稱" 
             @input="debounceSearch"
           />
           <button class="search-button">
@@ -129,7 +129,7 @@
               </td>
               <td class="image-cell">
                 <div class="product-image">
-                  <img :src="getImageSrc(product.coverImage)" :alt="product.name" />
+                  <img :src="getImageSrc(product, product.coverImage)" :alt="product.name" />
                 </div>
               </td>
               <td class="product-info-cell">
@@ -288,17 +288,7 @@ export default {
     return {
       // 商品列表數據
       products: [
-        {
-          id: 2,
-          name: 'Ultra Tab 專業平板',
-          // model: 'UT-2023',
-          description: '',
-          image: '',
-          stock: 0,
-          status: 1,
-          category: '',
-          createTime: ''
-        }
+        
       ],
       
       // 篩選條件
@@ -340,49 +330,48 @@ export default {
       if (this.filters.keyword) {
         const keyword = this.filters.keyword.toLowerCase();
         result = result.filter(product => 
-          product.name.toLowerCase().includes(keyword) || 
-          product.model.toLowerCase().includes(keyword)
+          product.name.toLowerCase().includes(keyword)
         );
       }
       
       // 應用分類篩選
       if (this.filters.category) {
-        console.log("this.filters.category: ", this.filters.category)
+        // console.log("this.filters.category: ", this.filters.category)
         result = result.filter(product => getCategoryNameEn(product.categoryId) === this.filters.category);
       }
       
       // 應用狀態篩選
       if (this.filters.status) {
-        console.log("this.filters.status: ", this.filters.status)
-        console.log("result: ", typeof(result[0].status),  typeof(this.filters.status))
+        // console.log("this.filters.status: ", this.filters.status)
+        // console.log("result: ", typeof(result[0].status),  typeof(this.filters.status))
         // console.log("this.product.status: ",  this.product.status)
         result = result.filter(product => product.status === this.filters.status);
-        console.log("result: ", result)
+        // console.log("result: ", result)
       }
       
-      // 應用庫存篩選
-      if (this.filters.stock) {
-        switch (this.filters.stock) {
-          case 'instock':
-            result = result.filter(product => product.stock > 10);
-            break;
-          case 'lowstock':
-            result = result.filter(product => product.stock > 0 && product.stock <= 10);
-            break;
-          case 'outofstock':
-            result = result.filter(product => product.stock === 0);
-            break;
-        }
-      }
+      // // 應用庫存篩選
+      // if (this.filters.stock) {
+      //   switch (this.filters.stock) {
+      //     case 'instock':
+      //       result = result.filter(product => product.stock > 10);
+      //       break;
+      //     case 'lowstock':
+      //       result = result.filter(product => product.stock > 0 && product.stock <= 10);
+      //       break;
+      //     case 'outofstock':
+      //       result = result.filter(product => product.stock === 0);
+      //       break;
+      //   }
+      // }
       
-      // 應用標籤篩選
-      if (this.filters.tag) {
-        result = result.filter(product => 
-          product.tags && product.tags.some(tag => 
-            tag.toLowerCase() === this.filters.tag.toLowerCase()
-          )
-        );
-      }
+      // // 應用標籤篩選
+      // if (this.filters.tag) {
+      //   result = result.filter(product => 
+      //     product.tags && product.tags.some(tag => 
+      //       tag.toLowerCase() === this.filters.tag.toLowerCase()
+      //     )
+      //   );
+      // }
       
       // 應用排序
       result.sort((a, b) => {
@@ -469,41 +458,7 @@ export default {
     this.fetchProducts();
   },
   methods: {
-    // 加載商品數據
-    loadProducts() {
 
-      // 模擬從 API 獲取數據
-      this.products = [
-        {
-          id: 1,
-          name: 'Pro X 旗艦智能手機',
-          // model: 'PX-2023',
-          description: '頂級旗艦智能手機，搭載最新處理器和高清攝像頭',
-          image: 'https://placehold.co/100x100/eee/999?text=Pro X',
-          // price: 6999,
-          // originalPrice: 7999,
-          stock: 156,
-          status: "1",
-          category: 'smartphone',
-          // tags: ['熱銷款', '精選'],
-          createTime: '2023-10-15T08:30:00Z'
-        },
-        {
-          id: 2,
-          name: 'Ultra Tab 專業平板',
-          // model: 'UT-2023',
-          description: '專業級平板電腦，適合創意工作者和專業人士',
-          image: 'https://placehold.co/100x100/eee/999?text=Ultra Tab',
-          // price: '-',
-          // originalPrice: 5499,
-          stock: 89,
-          status: "1",
-          category: 'tablet',
-          // tags: ['新品'],
-          createTime: '2023-11-05T10:15:00Z'
-        },
-      ];
-    },
 
     fetchProducts() {
       getAllProducts().then(response => {
@@ -517,10 +472,12 @@ export default {
         return  getCategoryName(categoryId) 
     },
 
-    getImageSrc(image) {
+    getImageSrc(product, image) {
+
       // 判断image是否是字符串
       if (typeof image !== 'string') {
-        console.error("Invalid image type, expected string but got:", typeof image);
+        console.error("Invalid image type, expected string but got:", typeof image, "product: ", product);
+        // console.log("product: ", product);
         return '';
       }
       // console.log("getImageSrc", image.startsWith('http'));
@@ -688,7 +645,8 @@ export default {
     // 跳轉到添加商品頁面
     goToAddProduct() {
       // 跳轉到添加商品頁面
-      alert('跳轉到添加商品頁面');
+      // alert('跳轉到添加商品頁面');
+      this.$router.push({ path: '/ProductEdit' });
     },
     
     // 輔助方法

@@ -14,6 +14,22 @@ const routes = [
         }
     },
     {
+        path: '/about',
+        name: 'About',
+        component: () => import('@/views/front/About.vue'),
+        meta: {
+            title: '關於我們'
+        }
+    },
+    {
+        path: '/home',
+        name: 'Home',
+        component: () => import('@/views/front/Home.vue'),
+        meta: {
+            title: '首頁'
+        }
+    },
+    {
         path: '/ProductDetail/:id',
         name: 'ProductDetail',
         component: () => import('@/views/front/components/ProductDetail.vue'),

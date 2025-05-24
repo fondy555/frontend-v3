@@ -8,17 +8,17 @@
           class="menu"
           @open="handleOpen"
           @close="handleClose"
-          :collapse="isCollapse"
           @select="select"
+          position: fixed
           mode="vertical"
         >
-          <el-sub-menu index="1">
+          <!-- <el-sub-menu index="1">
             <template #title>
               <i class="el-icon-setting"></i>
               <span>配置</span>
-            </template>
+            </template> -->
             <!-- 子菜单项可以放在这里，如果有的话 -->
-          </el-sub-menu>
+          <!-- </el-sub-menu> -->
           <el-menu-item index="/ProductList">
             <template #title>
               <div class="flex-start">

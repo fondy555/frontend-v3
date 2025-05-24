@@ -115,3 +115,17 @@ export function copyProduct(id) {
     throw error;
   })
 }
+
+// 更新商品
+export function updateProduct(data) {
+  return request({
+    url: `/v1/products/updateProduct`,
+    method: 'put',
+    data 
+  }).then(() => {
+    
+  }).catch(error => {
+    console.error('更新商品失敗:', error); // 打印API请求失败的错误
+    throw error; 
+  })
+}

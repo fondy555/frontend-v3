@@ -353,7 +353,7 @@
 </template>
 
 <script>
-import { uploadFile, deleteFile, saveProduct, getProductById } from '@/api/product.js';
+import { uploadFile, deleteFile, saveProduct, getProductById, updateProduct } from '@/api/product.js';
 import { CategoryMap, getImageSrc  } from '@/utils/utils';
 
 export default {
@@ -526,7 +526,7 @@ export default {
         this.product.options = [];
       }
 
-      console.log("this.product.variants ", this.product.variants)
+      // console.log("this.product.variants ", this.product.variants)
       try{
         this.product.variants.forEach(variant => {
         // console.log("variant.option: ", variant.options)
@@ -626,12 +626,15 @@ export default {
       
       // 模擬 API 調用成功
       // alert('商品保存成功！');
-      saveProduct(formData)
-        .then(response => {
-          console.log('商品保存成功:', response);
-          alert('商品保存成功！');
-          // this.resetForm();  
-        })
+      if (this.$route.params.id) {
+        updateProduct(formData)
+        alert('商品更新成功！')
+      } else {
+        saveProduct(formData)
+        alert('商品添加成功！')
+      }
+      
+
       
       // 重置表單或跳轉到商品列表頁
       // this.resetForm();
@@ -746,7 +749,8 @@ export default {
     goBack() {
       // 返回上一頁或商品列表頁
       // this.$router.push('/admin/products');
-      alert('操作已取消');
+      // alert('操作已取消');
+      this.$router.go(-1);
     },
     calculateStock() {
       let totalStock = 0;

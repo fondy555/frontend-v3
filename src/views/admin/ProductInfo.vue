@@ -33,7 +33,7 @@
       <div class="product-overview">
         <div class="product-gallery">
           <div class="main-image">
-            <img :src="currentImage" :alt="product.name" />
+            <img :src="getImageSrc(currentImage)" :alt="product.name" />
           </div>
           <div class="thumbnail-list">
             <div 
@@ -43,7 +43,7 @@
               :class="{ active: currentImageIndex === index }"
               @click="setCurrentImage(index)"
             >
-              <img :src="image" :alt="`${product.name} - 圖片 ${index + 1}`" />
+              <img :src="getImageSrc(image)" :alt="`${product.name} - 圖片 ${index + 1}`" />
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@
 
 <script>
 import { getProductById } from '@/api/product';
-import { getCategoryName } from '@/utils/utils';
+import { getCategoryName, getImageSrc } from '@/utils/utils';
 
 export default {
   data() {
@@ -264,170 +264,13 @@ export default {
         this.error = '获取产品详情失败，请稍后再试';
         // 可以添加更多的错误处理逻辑，比如显示一个错误提示
         }
-      // 模擬 API 請求延遲
-      // setTimeout(() => {
-      //   // 模擬商品數據
-      //   this.product = {
-      //     id: 1,
-      //     name: 'Pro X 旗艦智能手機',
-      //     model: 'PX-2023',
-      //     description: '頂級旗艦智能手機，搭載最新處理器和高清攝像頭',
-      //     longDescription: `Pro X 旗艦智能手機是我們最新推出的頂級產品，代表了當前智能手機技術的巔峰水平。\n\n搭載最新一代的驍龍8處理器，配合12GB大內存和512GB超大存儲空間，無論是日常使用還是高強度遊戲，都能輕鬆應對。\n\n6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率，HDR10+認證，帶來震撼的視覺體驗。\n\n後置四攝系統，包括一個108MP主攝、一個50MP超廣角、一個12MP長焦和一個ToF深感鏡頭，支持8K視頻錄製和專業模式拍攝。`,
-      //     images: [
-      //       'https://placehold.co/600x600/eee/999?text=Pro X 正面',
-      //       'https://placehold.co/600x600/eee/999?text=Pro X 背面',
-      //       'https://placehold.co/600x600/eee/999?text=Pro X 側面',
-      //       'https://placehold.co/600x600/eee/999?text=Pro X 細節'
-      //     ],
-      //     price: 6999,
-      //     originalPrice: 7999,
-      //     stock: 156,
-      //     status: 'published',
-      //     category: 'smartphone',
-      //     tags: ['熱銷款', '精選'],
-      //     createdAt: '2023-10-15T08:30:00Z',
-      //     updatedAt: '2023-11-20T14:45:00Z',
-      //     features: [
-      //       '6.7英寸2K+超視網膜屏幕，120Hz自適應刷新率',
-      //       '最新一代驍龍8處理器，12GB+512GB大內存大存儲',
-      //       '108MP主攝+50MP超廣角+12MP長焦+ToF深感四攝系統',
-      //       '5000mAh大電池，支持65W超級快充和15W無線充電',
-      //       'IP68防水防塵，支持人臉識別和屏下指紋識別'
-      //     ],
-      //     options: [
-      //       {
-      //         name: '顏色',
-      //         values: ['星空黑', '極光銀', '暗夜綠']
-      //       },
-      //       {
-      //         name: '存儲容量',
-      //         values: ['128GB', '256GB', '512GB']
-      //       }
-      //     ],
-      //     variants: [
-      //       {
-      //         options: [0, 0], // 星空黑, 128GB
-      //         price: 5999,
-      //         originalPrice: 6599,
-      //         stock: 45
-      //       },
-      //       {
-      //         options: [0, 1], // 星空黑, 256GB
-      //         price: 6499,
-      //         originalPrice: 7099,
-      //         stock: 32
-      //       },
-      //       {
-      //         options: [0, 2], // 星空黑, 512GB
-      //         price: 6999,
-      //         originalPrice: 7999,
-      //         stock: 18
-      //       },
-      //       {
-      //         options: [1, 0], // 極光銀, 128GB
-      //         price: 5999,
-      //         originalPrice: 6599,
-      //         stock: 37
-      //       },
-      //       {
-      //         options: [1, 1], // 極光銀, 256GB
-      //         price: 6499,
-      //         originalPrice: 7099,
-      //         stock: 29
-      //       },
-      //       {
-      //         options: [1, 2], // 極光銀, 512GB
-      //         price: 6999,
-      //         originalPrice: 7999,
-      //         stock: 15
-      //       },
-      //       {
-      //         options: [2, 0], // 暗夜綠, 128GB
-      //         price: 5999,
-      //         originalPrice: 6599,
-      //         stock: 0
-      //       },
-      //       {
-      //         options: [2, 1], // 暗夜綠, 256GB
-      //         price: 6499,
-      //         originalPrice: 7099,
-      //         stock: 8
-      //       },
-      //       {
-      //         options: [2, 2], // 暗夜綠, 512GB
-      //         price: 6999,
-      //         originalPrice: 7999,
-      //         stock: 12
-      //       }
-      //     ],
-      //     specifications: [
-      //       {
-      //         category: '基本規格',
-      //         items: [
-      //           { name: '型號', value: 'PX-2023' },
-      //           { name: '上市日期', value: '2023年10月' },
-      //           { name: '操作系統', value: 'Android 13' },
-      //           { name: '處理器', value: '驍龍8處理器' },
-      //           { name: '尺寸', value: '162.5 x 75.8 x 8.3 mm' },
-      //           { name: '重量', value: '198g' }
-      //         ]
-      //       },
-      //       {
-      //         category: '顯示屏',
-      //         items: [
-      //           { name: '屏幕尺寸', value: '6.7英寸' },
-      //           { name: '屏幕類型', value: 'AMOLED' },
-      //           { name: '分辨率', value: '3200 x 1440 像素' },
-      //           { name: '刷新率', value: '120Hz自適應' },
-      //           { name: '亮度', value: '1500尼特（峰值）' },
-      //           { name: '玻璃材質', value: '康寧大猩猩玻璃7' }
-      //         ]
-      //       },
-      //       {
-      //         category: '相機',
-      //         items: [
-      //           { name: '後置主攝', value: '108MP，f/1.8光圈，OIS光學防抖' },
-      //           { name: '超廣角', value: '50MP，f/2.2光圈，120°視角' },
-      //           { name: '長焦', value: '12MP，f/2.4光圈，3x光學變焦' },
-      //           { name: '深感鏡頭', value: 'ToF 3D深感鏡頭' },
-      //           { name: '前置攝像頭', value: '32MP，f/2.0光圈，自動對焦' },
-      //           { name: '視頻錄製', value: '8K@24fps，4K@60fps，1080p@240fps' }
-      //         ]
-      //       },
-      //       {
-      //         category: '電池與充電',
-      //         items: [
-      //           { name: '電池容量', value: '5000mAh' },
-      //           { name: '有線充電', value: '65W超級快充' },
-      //           { name: '無線充電', value: '15W Qi無線充電' },
-      //           { name: '反向無線充電', value: '支持，5W' }
-      //         ]
-      //       },
-      //       {
-      //         category: '連接與網絡',
-      //         items: [
-      //           { name: '5G', value: '支持SA/NSA雙模5G' },
-      //           { name: 'Wi-Fi', value: 'Wi-Fi 6E' },
-      //           { name: '藍牙', value: '藍牙5.3' },
-      //           { name: 'NFC', value: '支持' },
-      //           { name: 'GPS', value: 'GPS, GLONASS, BeiDou, Galileo' },
-      //           { name: '接口', value: 'USB Type-C 3.2' }
-      //         ]
-      //       }
-      //     ],
-      //     seo: {
-      //       title: 'Pro X 旗艦智能手機 - 2023年最新旗艦手機',
-      //       keywords: '旗艦手機,Pro X,智能手機,高端手機,108MP相機,5G手機',
-      //       description: 'Pro X 旗艦智能手機，搭載最新驍龍8處理器，108MP四攝系統，5000mAh大電池，帶來極致的性能體驗和攝影體驗。'
-      //     },
-      //     featured: true,
-      //     newArrival: false,
-      //     sortOrder: 100
-      //   };
-      // }, 800);
     },
     setCurrentImage(index) {
       this.currentImageIndex = index;
+    },
+
+    getImageSrc(image) {
+        return getImageSrc(image)
     },
     formatDescription(text) {
       if (!text) return '';
@@ -497,7 +340,11 @@ export default {
     },
     editProduct() {
       // 跳轉到編輯商品頁面
-      alert(`編輯商品 ID: ${this.product.id}`);
+      // alert(`編輯商品 ID: ${this.product.id}`);
+        this.$router.push({ 
+          name: 'productEdit',
+          params: { id: this.product.id }
+        });
     }
   }
 };
@@ -727,7 +574,6 @@ body {
 
 .price-info {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
