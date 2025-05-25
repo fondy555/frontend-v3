@@ -1,6 +1,6 @@
 <template>
   <div class="about-page">
-    <Nav/>
+    <!-- <Nav/> -->
     <!-- <Banner/> -->
 
     <!-- 公司簡介 -->
@@ -342,10 +342,10 @@
 
 <script>
 // import Banner from './components/Banner'
-import Nav from './components/Nav.vue'
+// import Nav from './components/Nav.vue'
 
 export default {
-  components: {Nav},
+  // components: {Nav},
   data() {
     return {
       submitting: false,

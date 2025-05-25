@@ -36,7 +36,7 @@ service.interceptors.request.use(
     error => {
         // 处理请求错误
         tryHideFullScreenLoading()
-        console.log("request error: ", error) // 用于调试
+        // console.log("request error: ", error) // 用于调试
         return Promise.reject(error)
     }
 )
@@ -83,6 +83,10 @@ service.interceptors.response.use(
             })
             // 跳转到登录页
             router.push('/login') // 跳转到登录页
+        } else if  (error.response && error.response.status === 401) {
+            // 处理 401 状态码
+            removeToken() // 清除存储中的 token
+            store.dispatch('user/resetToken') // 清除 Vuex 中的 token
         } else {
             ElMessage({
                 message: '内部错误，请联系管理员',

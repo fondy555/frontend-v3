@@ -65,7 +65,7 @@ const actions = {
     }, 
     // 获取用户信息
     getInfo({commit}) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // const tokens = getToken()
             // console.log(" getInfo tokens: ", tokens)
             getInfo().then(response => {
@@ -94,8 +94,9 @@ const actions = {
                 // commit('SET_LOGIN_ID', data.id)
                 resolve(response)
             }).catch(error => {
-                console.error('Failed to fetch user info:', error);
-                reject(error)
+                // console.log('Failed to fetch user info:', error);
+                // reject(error)
+                return error;
             })
         })
     },

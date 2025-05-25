@@ -5,14 +5,14 @@ const routes = [
         path: '/',
         redirect: '/productService',
     },
-    {
-        path: '/productService',
-        name: 'ProductService',
-        component: () => import('@/views/front/ProductService.vue'),
-        meta: {
-            title: '产品与服务'
-        }
-    },
+    // {
+    //     path: '/productService',
+    //     name: 'ProductService',
+    //     component: () => import('@/views/front/ProductService.vue'),
+    //     meta: {
+    //         title: '产品与服务'
+    //     }
+    // },
     {
         path: '/about',
         name: 'About',
@@ -22,12 +22,32 @@ const routes = [
         }
     },
     {
-        path: '/home',
-        name: 'Home',
-        component: () => import('@/views/front/Home.vue'),
+        path: '/index',
+        name: 'Index',
+        component: () => import('@/views/front/Index.vue'),
         meta: {
-            title: '首頁'
-        }
+            title: '主頁'
+        },
+        children: [
+            {
+                path: '/about',
+                name: 'About',
+                component: () => import('@/views/front/About.vue'),
+                meta: {
+                    title: '關於我們'
+                }
+            },
+            {
+                path: '/productService',
+                name: 'productService',
+                component: () => import('@/views/front/ProductList.vue'), 
+            },
+            {
+                path: '/home',
+                name: 'Home',
+                component: () => import('@/views/front/Home.vue'), 
+            }
+        ]
     },
     {
         path: '/ProductDetail/:id',

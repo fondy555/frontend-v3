@@ -1,12 +1,12 @@
 <template>
 	<div>
-		<Nav/>
-		<Banner/>
+		<!-- <Nav/>
+		<Banner/> -->
 		<div class="container">
-			<el-breadcrumb separator="/" class="top">
+			<!-- <el-breadcrumb separator="/" class="top">
 				<el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
 				<el-breadcrumb-item>当前</el-breadcrumb-item>
-			</el-breadcrumb>
+			</el-breadcrumb> -->
 			<el-card class="top">
         <el-row :gutter="24" style="height: 1000px;">
           <!-- 左侧筛选栏 -->
@@ -80,20 +80,20 @@
         </el-row>
 			</el-card>
 		</div>
-		<Footer class="top"/>
+		<!-- <Footer class="top"/> -->
 	</div>
 </template>
 
 <script>
-import Banner from './components/Banner'
-import Nav from './components/Nav.vue'
-import Footer from './components/Footer.vue'
+// import Banner from './components/Banner'
+// import Nav from './components/Nav.vue'
+// import Footer from './components/Footer.vue'
 import { getAllProducts } from '@/api/product.js'
 import { baseImageUrl } from '@/config';
 
 export default {
     name: 'ProductService',
-    components: {Nav, Footer, Banner},
+    // components: {Nav, Footer, Banner},
 
     data() {
         return {

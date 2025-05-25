@@ -81,12 +81,8 @@ export default {
         this.isLogin = token ? true : false;
 
         if (this.isLogin) {
-          try {
-            this.getInfo();
-          } catch (error) {
-            console.error('获取用户信息失败:', error);
-          }
-          
+          this.getInfo();
+
         }
 
         const cachedFooterData = localStorage.getItem('footerData');
