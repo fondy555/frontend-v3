@@ -17,14 +17,14 @@
                   <el-collapse-item title="Model" name="1" style="margin-bottom: 10px;">
                   <!-- 原有的Model筛选 -->
                   <div v-for="i in testList" :key="i">
-                    <el-checkbox value="checked1" :label="i" style="margin-top: 5px;">{{ i }}</el-checkbox>
+                    <el-checkbox v-model="checked1" :value="i" style="margin-top: 5px;">{{ i }}</el-checkbox>
                   </div>
                   </el-collapse-item>
 
                   <!-- 颜色筛选 -->
                   <el-collapse-item title="颜色" name="2" style="margin-bottom: 10px;">
                   <div v-for="color in colors" :key="color">
-                    <el-checkbox value="selectedColors" :label="color" style="margin-top: 5px;">{{ color }}</el-checkbox>
+                    <el-checkbox v-model="selectedColors" :value="color" style="margin-top: 5px;">{{ color }}</el-checkbox>
                   </div>
                   </el-collapse-item>
 

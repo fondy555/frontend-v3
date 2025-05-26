@@ -46,15 +46,16 @@ const routes = [
                 path: '/home',
                 name: 'Home',
                 component: () => import('@/views/front/Home.vue'), 
-            }
+            },    
+            {
+                path: '/ProductDetail/:id',
+                name: 'ProductDetail',
+                component: () => import('@/views/front/components/ProductDetail.vue'),
+                props: true
+            },
         ]
     },
-    {
-        path: '/ProductDetail/:id',
-        name: 'ProductDetail',
-        component: () => import('@/views/front/components/ProductDetail.vue'),
-        props: true
-    },
+
     {
         path: '/login',
         component: () => import('@/views/login/login.vue'),

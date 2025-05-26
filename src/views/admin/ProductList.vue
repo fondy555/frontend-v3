@@ -14,7 +14,7 @@
       <div class="filter-section">
         <div class="search-box">
           <input 
-            type="text" 
+            link 
             v-model="filters.keyword" 
             placeholder="搜索商品名稱" 
             @input="debounceSearch"

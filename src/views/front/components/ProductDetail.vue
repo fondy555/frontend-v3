@@ -1,6 +1,5 @@
 <template>
   <div class="product-detail">
-    <Nav/>
     <div class="container">
     <el-card class="top">
         <!-- <div class="product-detail"> -->
@@ -40,7 +39,7 @@
             </div>
     
             <h1 class="product-title">{{ product.name }}</h1>
-            <p class="product-model">類型: {{ getCategoryName(product.categoryId) }}</p>
+            <p class="product-model">類型: {{ getNameByID(this.categories, product.categoryId) }}</p>
     
             <!-- 商品規格選擇 -->
             <div class="product-options">
@@ -151,10 +150,11 @@
   </template>
   
   <script>
-  import Nav from './Nav.vue';
+  // import Nav from './Nav.vue';
   import Footer from './Footer.vue';
   import { getProductById } from '@/api/product';
-  import { getCategoryName,  getImageSrc} from '@/utils/utils';
+  import { getImageSrc} from '@/utils/utils';
+  import { getAllCategories } from '@/api/categories'
 
   export default {
     data() {
@@ -175,6 +175,7 @@
           specifications: []
         },
 
+        categories: [],
         tabs: ['產品描述', '規格參數'],
         activeTab: 0,
         selectedImageIndex: 0,
@@ -182,7 +183,6 @@
       };
     },
     components: {
-      Nav,
       Footer
     },
     async created() {
@@ -203,6 +203,9 @@
         this.error = '获取产品详情失败，请稍后再试';
         // 可以添加更多的错误处理逻辑，比如显示一个错误提示
         }
+    },
+    mounted() {
+        this.fetchAllCategories();
     },
     computed: {
       currentVariant() {
@@ -225,10 +228,20 @@
       getImageSrc(image) {
         return getImageSrc(image)
       },
-      getCategoryName(categoryId) {
-        // 判断categoryId是否在CategoryMap中
-        return  getCategoryName(categoryId) 
-      } 
+      // 根據ID獲取名字
+      getNameByID(ObjectMap, Id) {
+        const obj = ObjectMap.find(obj => obj.id === Id)
+        return obj ? obj.name : '未知'
+      },
+    // 獲取所有分類
+    fetchAllCategories() {
+      getAllCategories().then(response => {
+          this.categories = response.data; // 访问response.data
+          // console.log(this.CategoryMap)
+      }).catch(error => {
+          console.error('Failed to fetch categories:', error);
+      });
+    },
     }
   };
   </script>

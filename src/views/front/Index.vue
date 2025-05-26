@@ -66,7 +66,7 @@
         mode="horizontal"
         @select="handleMenuSelect"
       >
-        <el-menu-item index="home">
+        <el-menu-item index="/home">
           首頁
         </el-menu-item>
         
@@ -136,6 +136,7 @@ export default {
     handleMenuSelect(index) {
       this.activeIndex = index;
       if (this.$route.path !== index) {
+        
         this.$router.push(index);
       }
     }

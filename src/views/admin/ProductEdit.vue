@@ -17,7 +17,7 @@
             <div class="form-group">
               <label for="productName">商品名稱 <span class="required">*</span></label>
               <input 
-                type="text" 
+                link 
                 id="productName" 
                 v-model="product.name" 
                 required 
@@ -28,7 +28,7 @@
             <!-- <div class="form-group">
               <label for="productModel">型號 <span class="required">*</span></label>
               <input 
-                type="text" 
+                link 
                 id="productModel" 
                 v-model="product.model" 
                 required 
@@ -39,7 +39,7 @@
             <!-- <div class="form-group">
               <label for="productTag">標籤</label>
               <input 
-                type="text" 
+                link 
                 id="productTag" 
                 v-model="product.tag" 
                 placeholder="例如：熱銷款、新品、限量版"
@@ -117,7 +117,7 @@
                 <div class="form-group">
                   <label :for="`optionName${optionIndex}`">選項名稱 <span class="required">*</span></label>
                   <input 
-                    type="text" 
+                    link 
                     :id="`optionName${optionIndex}`" 
                     v-model="option.name" 
                     required 
@@ -136,7 +136,7 @@
                   class="option-value-item"
                 >
                   <input 
-                    type="text" 
+                    link 
                     v-model="option.values[valueIndex]" 
                     placeholder="選項值"
                     required
@@ -227,7 +227,7 @@
               class="feature-item"
             >
               <input 
-                type="text" 
+                link 
                 v-model="product.features[index]" 
                 placeholder="輸入商品特點"
               />
@@ -278,7 +278,7 @@
                 <div class="form-group">
                   <label :for="`specCategory${specIndex}`">參數分類 <span class="required">*</span></label>
                   <input 
-                    type="text" 
+                    link 
                     :id="`specCategory${specIndex}`" 
                     v-model="spec.category" 
                     required 
@@ -298,13 +298,13 @@
                 >
                   <div class="spec-item-inputs">
                     <input 
-                      type="text" 
+                      link 
                       v-model="item.name" 
                       placeholder="參數名稱"
                       required
                     />
                     <input 
-                      type="text" 
+                      link 
                       v-model="item.value" 
                       placeholder="參數值"
                       required

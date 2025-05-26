@@ -7,7 +7,7 @@
           <div class="filter-header">
             <h3>商品筛选</h3>
             <el-button 
-              type="text" 
+              link
               size="small" 
               @click="resetFilters"
               class="reset-btn"
@@ -21,12 +21,12 @@
             <h4 class="filter-title">商品分类</h4>
             <el-checkbox-group v-model="filters.categories" @change="applyFilters">
               <el-checkbox 
-                v-for="category in categories" 
-                :key="category.value"
-                :label="category.value"
+                v-for="category in CategoryMap" 
+                :key="category.id"
+                :value="category.id"
                 class="category-checkbox"
               >
-                {{ category.label }} ({{ category.count }})
+                {{ category.name }}
               </el-checkbox>
             </el-checkbox-group>
           </div>
@@ -38,11 +38,11 @@
             <el-checkbox-group v-model="filters.brands" @change="applyFilters">
               <el-checkbox 
                 v-for="brand in brands" 
-                :key="brand.value"
-                :label="brand.value"
+                :key="brand.id"
+                :value="brand.id"
                 class="brand-checkbox"
               >
-                {{ brand.label }} ({{ brand.count }})
+                {{ brand.name }}
               </el-checkbox>
             </el-checkbox-group>
           </div>
@@ -60,14 +60,14 @@
               v-for="tag in activeFilterTags" 
               :key="tag.key"
               closable
-              @close="removeFilter(tag.key, tag.value)"
+              @close="removeFilter(tag.key, tag.label)"
               class="filter-tag"
             >
               {{ tag.label }}
             </el-tag>
           </div>
           
-          <div class="toolbar-right">
+          <!-- <div class="toolbar-right">
             <span class="sort-label">排序：</span>
             <el-select v-model="sortBy" @change="applySorting" placeholder="选择排序方式" size="small" style="width: 90px;">
               <el-option label="默认排序" value="default" />
@@ -76,7 +76,7 @@
               <el-option label="评分从高到低" value="rating_desc" />
               <el-option label="销量从高到低" value="sales_desc" />
             </el-select>
-          </div>
+          </div> -->
         </div>
 
         <!-- 商品网格 -->
@@ -118,7 +118,7 @@
                 <p class="product-description">{{ product.description }}</p>
 
                 <!-- 评分区域 -->
-                <div class="rating-section">
+                <!-- <div class="rating-section">
                   <el-rate 
                     v-model="product.rating" 
                     disabled 
@@ -128,10 +128,10 @@
                     class="product-rating"
                   />
                   <span class="review-count">({{ product.reviews }})</span>
-                </div>
+                </div> -->
 
                 <!-- 价格区域 -->
-                <div class="price-section">
+                <!-- <div class="price-section">
                   <div class="price-container">
                     <span class="current-price">¥{{ product.price }}</span>
                     <span 
@@ -149,10 +149,10 @@
                   >
                     省¥{{ product.originalPrice - product.price }}
                   </el-tag>
-                </div>
+                </div> -->
 
                 <!-- 操作按钮 -->
-                <div class="action-section">
+                <!-- <div class="action-section">
                   <el-button 
                     type="primary" 
                     size="small"
@@ -161,7 +161,7 @@
                   >
                     加入购物车
                   </el-button>
-                </div>
+                </div> -->
               </div>
             </el-card>
           </el-col>
@@ -186,8 +186,9 @@
 
 <script>
 // import { ref, reactive, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getAllProducts } from '@/api/product.js'
+import { getAllProducts } from '@/api/product'
+import { getAllCategories } from '@/api/categories'
+import { getAllBrands } from '@/api/brands'
 
 export default {
   data() {
@@ -204,82 +205,52 @@ export default {
         features: []
       },
 
-      categories: [
-        { label: '数码配件', value: 'digital', count: 45 },
-        { label: '智能设备', value: 'smart', count: 32 },
-        { label: '电脑外设', value: 'computer', count: 28 },
-        { label: '音响设备', value: 'audio', count: 19 }
-      ],
+      categories: [],
 
-      brands: [
-        { label: 'Apple', value: 'apple', count: 23 },
-        { label: '小米', value: 'xiaomi', count: 31 },
-        { label: '华为', value: 'huawei', count: 18 },
-        { label: '索尼', value: 'sony', count: 15 },
-        { label: '罗技', value: 'logitech', count: 12 }
-      ],
+      brands: [],
 
       allProducts: [
-        {
-          id: 1,
-          name: "无线蓝牙耳机",
-          description: "高品质音效，主动降噪功能",
-          price: 299,
-          originalPrice: 399,
-          coverImage: "/placeholder.svg?height=300&width=300",
-          rating: 4.8,
-          reviews: 128,
-          badge: "热销",
-          category: 'digital',
-          brand: 'sony',
-          sales: 1200,
-          features: ['free_shipping', 'on_sale']
-        },
+        // {
+        //   id: 1,
+        //   name: "无线蓝牙耳机",
+        //   description: "高品质音效，主动降噪功能",
+        //   price: 299,
+        //   originalPrice: 399,
+        //   coverImage: "/placeholder.svg?height=300&width=300",
+        //   rating: 4.8,
+        //   reviews: 128,
+        //   badge: "热销",
+        //   category: 'digital',
+        //   brand: 'sony',
+        //   sales: 1200,
+        //   features: ['free_shipping', 'on_sale']
+        // },
         // Add other products here...
-      ]
+      ],
+      CategoryMap: []
     }
   },
     mounted() {
         this.fetchProducts();
-        // this.mouseover();
+        this.fetchAllCategories();
+        this.fetchAllBrands();
     },
   computed: {
     filteredProducts() {
       let products = [...this.allProducts]
-      console.log("product:", products)
+      // console.log("product:", products)
       // 分类筛选
       if (this.filters.categories.length > 0) {
         products = products.filter(product => 
-          this.filters.categories.includes(product.category)
+          this.filters.categories.includes(product.categoryId)
         )
       }
 
-      // 价格筛选
-      products = products.filter(product => 
-        product.price >= this.filters.priceRange[0] && 
-        product.price <= this.filters.priceRange[1]
-      )
 
       // 品牌筛选
       if (this.filters.brands.length > 0) {
         products = products.filter(product => 
-          this.filters.brands.includes(product.brand)
-        )
-      }
-
-      // 评分筛选
-      if (this.filters.rating > 0) {
-        products = products.filter(product => 
-          product.rating >= this.filters.rating
-        )
-      }
-
-      // 特性筛选
-      if (this.filters.features.length > 0) {
-        products = products.filter(product => 
-          this.filters.features.some(feature => 
-            product.features.includes(feature)
-          )
+          this.filters.brands.includes(product.brandId)
         )
       }
 
@@ -321,19 +292,14 @@ export default {
       if (this.filters.categories.length > 0) {
         tags.push({
           key: 'categories',
-          label: '分类: ' + this.filters.categories.join(', ')
+          label: '分类: ' + this.filters.categories.map(category => this.getNameByID(this.CategoryMap, category)).join(', ')
         })
+        // console.log("tags: ", tags)
       }
       if (this.filters.brands.length > 0) {
         tags.push({
           key: 'brands',
-          label: '品牌: ' + this.filters.brands.join(', ')
-        })
-      }
-      if (this.filters.rating > 0) {
-        tags.push({
-          key: 'rating',
-          label: '评分: ' + this.filters.rating
+          label: '品牌: ' + this.filters.brands.map(brand => this.getNameByID(this.brands, brand)).join(', ')
         })
       }
       return tags
@@ -344,10 +310,7 @@ export default {
     resetFilters() {
       this.filters = {
         categories: [],
-        priceRange: [0, 2000],
         brands: [],
-        rating: 0,
-        features: []
       }
     },
 
@@ -359,6 +322,32 @@ export default {
         });
     },
 
+    // 獲取所有分類
+    fetchAllCategories() {
+      getAllCategories().then(response => {
+          this.CategoryMap = response.data; // 访问response.data
+          // console.log(this.CategoryMap)
+      }).catch(error => {
+          console.error('Failed to fetch categories:', error);
+      });
+    },
+
+    // 獲取所有brands
+    fetchAllBrands() {
+      getAllBrands().then(response => {
+          this.brands = response.data; // 访问response.data
+          // console.log(this.brands)
+      }).catch(error => {
+          console.error('Failed to fetch brands:', error);
+      });
+    },
+
+    // 根據ID獲取名字
+    getNameByID(ObjectMap, Id) {
+      const obj = ObjectMap.find(obj => obj.id === Id)
+      return obj ? obj.name : '未知'
+    },
+
     applyFilters() {
       this.currentPage = 1
     },
@@ -368,12 +357,17 @@ export default {
     },
 
     removeFilter(key, value) {
+
       if (key === 'categories') {
         this.filters.categories = this.filters.categories.filter(item => item !== value)
+        this.filters.categories = []
+        // this.applyFilters()
+        // this.resetFilters()
       } else if (key === 'brands') {
         this.filters.brands = this.filters.brands.filter(item => item !== value)
-      } else if (key === 'rating') {
-        this.filters.rating = 0
+        this.filters.brands = []
+        // this.applyFilters()
+        // this.resetFilters()
       }
     },
 
@@ -385,17 +379,12 @@ export default {
       this.currentPage = page
     },
 
-    handleProductClick(productId) {
-      ElMessage.success(`你点击了商品ID: ${productId}`)
+    handleProductClick(id) {
+      this.$router.push({ name: 'ProductDetail', params: { id } });
+      // ElMessage.success(`你点击了商品ID: ${productId}`)
     },
 
-    addToCart(product) {
-      ElMessage.success(`已添加 ${product.name} 到购物车`)
-    },
 
-    getBadgeType(badge) {
-      return badge === '热销' ? 'warning' : 'success'
-    }
   }
 }
 
@@ -587,6 +576,7 @@ export default {
 
 .product-info {
   padding: 16px;
+  min-width: none;
 }
 
 .product-name {
