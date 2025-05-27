@@ -50,13 +50,14 @@
               <label for="productCategory">商品分類 <span class="required">*</span></label>
               <select id="productCategory" v-model="product.categoryId" required>
                 <option value=0>請選擇分類</option>
-                <option v-for="(Category, key) in CategoryMap" :key="key" :value="Category.id">{{ Category.Name }}</option>
-                <!-- <option value="smartphone">智能手機</option>
-                <option value="tablet">平板電腦</option>
-                <option value="headphone">無線耳機</option>
-                <option value="laptop">筆記本電腦</option>
-                <option value="drone">無人機</option>
-                <option value="jewelry">珠寶首飾</option> -->
+                <option v-for="(Category, key) in CategoryMap" :key="key" :value="Category.id">{{ Category.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="productCategory">品牌 <span class="required">*</span></label>
+              <select id="productCategory" v-model="product.brandId" required>
+                <option value=0>請選擇品牌</option>
+                <option v-for="(brand, key) in brands" :key="key" :value="brand.id">{{ brand.name }}</option>
               </select>
             </div>
           </div>
@@ -354,7 +355,9 @@
 
 <script>
 import { uploadFile, deleteFile, saveProduct, getProductById, updateProduct } from '@/api/product.js';
-import { CategoryMap, getImageSrc  } from '@/utils/utils';
+import { getImageSrc  } from '@/utils/utils';
+import { getAllCategories } from '@/api/categories'
+import { getAllBrands } from '@/api/brands'
 
 export default {
   name: 'ProductEdit',
@@ -364,6 +367,7 @@ export default {
         name: '',
         tag: '',
         categoryId: 0,
+        brandId: 0,
         coverImage: '' ,
         stockQuantity: 0,
         detailImages: [],
@@ -394,7 +398,8 @@ export default {
         featured: false,
         newArrival: false
       },
-      CategoryMap
+      brands: [],
+      CategoryMap: []
     };
   },
   watch: {
@@ -416,9 +421,29 @@ export default {
   },
   mounted() {
     this.generateVariants();
+    this.fetchAllCategories();
+    this.fetchAllBrands();
   },
   methods: {
-    
+    // 獲取所有分類
+    fetchAllCategories() {
+      getAllCategories().then(response => {
+          this.CategoryMap = response.data; // 访问response.data
+          console.log(this.CategoryMap)
+      }).catch(error => {
+          console.error('Failed to fetch categories:', error);
+      });
+    },
+
+    // 獲取所有brands
+    fetchAllBrands() {
+      getAllBrands().then(response => {
+          this.brands = response.data; // 访问response.data
+          // console.log(this.brands)
+      }).catch(error => {
+          console.error('Failed to fetch brands:', error);
+      });
+    },
     // 圖片處理
     triggerImageUpload() {
       this.$refs.imageUpload.click();

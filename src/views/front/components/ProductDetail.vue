@@ -7,7 +7,7 @@
             <!-- 商品圖片區域 -->
             <div class="product-images">
                 <div class="main-image">
-                    <img :src="getImageSrc(product.detailImages[selectedImageIndex])" :alt="product.name" />
+                    <img :src="getImageSrc(product.detailImages[selectedImageIndex]) " :alt="product.name" />
                 </div>
                 <div class="image-thumbnails">
                     <div 

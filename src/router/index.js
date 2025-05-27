@@ -3,7 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
     {
         path: '/',
-        redirect: '/productService',
+        redirect: '/index',
     },
     // {
     //     path: '/productService',
@@ -38,8 +38,8 @@ const routes = [
                 }
             },
             {
-                path: '/productService',
-                name: 'productService',
+                path: '/productList',
+                name: 'productList',
                 component: () => import('@/views/front/ProductList.vue'), 
             },
             {
@@ -72,7 +72,7 @@ const routes = [
         },
         children: [
                 {
-                    path: '/info',
+                    path: '/admin/info',
                     name: 'Info',
                     component: () => import('@/views/admin/Info.vue'),
                     meta: {
@@ -80,16 +80,16 @@ const routes = [
                     }
                 },
                 {
-                path: '/productList',
-                name: 'productList',
+                path: '/admin/productList',
+                name: 'adminProductList',
                 component: () => import('@/views/admin/ProductList.vue'),
                     meta: {
                         title: '商品列表'
                     }
                 },
                 {
-                    path: '/Product/:id',
-                    name: 'product',
+                    path: '/admin/Product/:id',
+                    name: 'adminProduct',
                     // component: () => import('@/views/front/components/ProductDetail.vue'),
                     component: () => import('@/views/admin/ProductInfo.vue'),
                         meta: {
@@ -97,8 +97,8 @@ const routes = [
                         }
                 },
                 {
-                    path: '/ProductEdit/:id?',
-                    name: 'productEdit',
+                    path: '/admin/ProductEdit/:id?',
+                    name: 'adminProductEdit',
                     component: () => import('@/views/admin/ProductEdit.vue'),
                     meta: {
                         title: '編輯商品'

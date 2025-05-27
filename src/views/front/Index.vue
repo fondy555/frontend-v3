@@ -57,64 +57,28 @@
     </div>
   </header>
 
-  <!-- 主導航菜單 -->
   <nav class="main-navigation">
     <div class="nav-container">
       <el-menu
         :default-active="activeIndex"
         class="nav-menu"
         mode="horizontal"
-        @select="handleMenuSelect"
       >
-        <el-menu-item index="/home">
-          首頁
-        </el-menu-item>
-        
-        <el-sub-menu index="apple">
-          <template v-slot:title>
-            <i class="el-icon-mobile-phone"></i>
-            Apple
-          </template>
-          <el-menu-item index="iphone">iPhone</el-menu-item>
-          <el-menu-item index="ipad">iPad</el-menu-item>
-          <el-menu-item index="airpods">AirPods</el-menu-item>
-          <el-menu-item index="watch">Apple Watch</el-menu-item>
-          <el-menu-item index="macbook">MacBook</el-menu-item>
-          <el-menu-item index="others">其他</el-menu-item>
-        </el-sub-menu>
-        
-        <el-sub-menu index="Dji">
-          <template v-slot:title>
-            <i class="el-icon-coordinate"></i>
-            DJI
-          </template>
-          <el-menu-item index="drones">無人機</el-menu-item>
-          <el-menu-item index="handheld gimbals">手持穩定器</el-menu-item>
-          <el-menu-item index="gimbal cameras">雲台相機</el-menu-item>
-          <el-menu-item index="accessories">無人機配件</el-menu-item>
-        </el-sub-menu>
-        
-        <el-sub-menu index="jewelry">
-          <template v-slot:title>
-            <i class="el-icon-star-on"></i>
-            首飾
-          </template>
-          <!-- <el-menu-item index="gold">黃金首飾</el-menu-item> -->
-          <!-- <el-menu-item index="diamond">鑽石珠寶</el-menu-item> -->
-          <el-menu-item index="silver">銀飾系列</el-menu-item>
-          <el-menu-item index="gemstone">寶石首飾</el-menu-item>
-        </el-sub-menu>
-        
-        <el-menu-item index="/productService">
-          <i class="el-icon-document"></i>
-          產品目錄
-        </el-menu-item>
-        
-        <el-menu-item index="/about">
-          <i class="el-icon-info"></i>
-          關於我們
-        </el-menu-item>
-        
+        <template v-for="item in menuItems">
+          <el-menu-item v-if="!item.children" :index="item.path" :key="item.id" @click="handleMenuItemClick(item.path)">
+            {{ item.text }}
+          </el-menu-item>
+          <el-sub-menu v-else :index="item.text" :key="item.method">
+            <template v-slot:title>
+              <i :class="item.icon"></i>
+              {{ item.text }}
+            </template>
+            <el-menu-item v-for="child in item.children" :index="child.text" :key="child.text" 
+            @click="handleSubMenuItemClick(item.path, item.method, child.value)">
+              {{ child.text }}
+            </el-menu-item>
+          </el-sub-menu>
+        </template>
       </el-menu>
     </div>
   </nav>
@@ -126,7 +90,53 @@ export default {
   data() {
     return {
       searchQuery: '',
-      activeIndex: 'home'
+      activeIndex: 'home',
+      menuItems: [
+        { id: 1, 
+          text: '首頁', 
+          path: '/home',
+          method: "", 
+        },
+        { id: 2, 
+          text: 'Apple', 
+          path: 'productList',
+          method: "getProductsByCategoryId", 
+          children: [
+          { text: 'iPhone', value: 1 },
+          { text: 'iPad', value: 2 },
+          { text: 'AirPods', value: 3 },
+          { text: 'Apple Watch', value: 4 },
+          { text: 'MacBook', value: 5 },
+        ] },
+        { id: 3, 
+          text: 'DJI', 
+          path: 'productList',
+          method: "getProductsByCategoryId",
+          children: [ 
+          { text: '無人機',   value: 6},
+          { text: '手持穩定器',   value: 7 },
+          { text: '雲台相機',   value: 8 },
+          { text: '無人機配件',   value: 9 },
+        ]},
+        { id:4,
+          text: '首飾', 
+          path: 'productList',
+          method: "getProductsByCategoryId",
+          children: [
+          { text: '銀飾系列', value: 11},
+          { text: '寶石首飾', value: 12 }, 
+        ]},
+        { id:5,
+          text: '產品目錄', 
+          path: '/productList/',
+          method: "",
+        },
+        { id:6, 
+          text: '關於我們', 
+          path: '/about',
+          method: "",
+        },
+      ]
     };
   },
   methods: {
@@ -134,11 +144,31 @@ export default {
       // 搜索处理逻辑
     },
     handleMenuSelect(index) {
+      // console.log(index, key,method);
       this.activeIndex = index;
       if (this.$route.path !== index) {
-        
+        this.$router.push(index);
+        // console.log(index);
+      }
+    },
+
+    handleMenuItemClick(index) {
+      this.activeIndex = index;
+      // console.log(index);
+      if (this.$route.path !== index) {
         this.$router.push(index);
       }
+    },
+    handleSubMenuItemClick(parentPath, method, value) {
+      // this.activeIndex = index;
+      // console.log(parentPath, method, childText);
+      this.$router.push({
+        name: parentPath,
+        query: {  
+          categoryID: value,
+          method: method
+        },
+      });
     }
   }
 };
@@ -271,5 +301,6 @@ export default {
   line-height: 55px;
   border-bottom: none;
   font-weight: 500;
+  margin-right: 20px; /* 增加间隔 */
 }
 </style>

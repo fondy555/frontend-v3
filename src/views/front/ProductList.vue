@@ -189,6 +189,7 @@
 import { getAllProducts } from '@/api/product'
 import { getAllCategories } from '@/api/categories'
 import { getAllBrands } from '@/api/brands'
+import { getProductsByCategoryID } from '@/api/product'
 
 export default {
   data() {
@@ -231,7 +232,14 @@ export default {
     }
   },
     mounted() {
-        this.fetchProducts();
+      const {categoryID, method} = this.$route.query
+      if (method == "getProductsByCategoryId") {
+        this.fetchProductsByCategoryID(categoryID)
+      } else {
+        this.fetchProducts()
+      }
+      // console.log("method: ", method) 
+        // this.fetchProducts();
         this.fetchAllCategories();
         this.fetchAllBrands();
     },
@@ -312,6 +320,14 @@ export default {
         categories: [],
         brands: [],
       }
+    },
+
+    fetchProductsByCategoryID(categoryId) {
+      getProductsByCategoryID(categoryId).then(response => {
+          this.allProducts = response.data; // 访问response.data
+      }).catch(error => {
+          console.error('Failed to fetch products by CategoryID:', error);
+      });
     },
 
     fetchProducts() {

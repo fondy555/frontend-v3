@@ -71,7 +71,7 @@
                       <el-tag 
                         v-for="feature in product.features" 
                         :key="feature"
-                        size="mini"
+                        size="small"
                         class="feature-tag"
                       >
                         {{ feature }}
@@ -82,11 +82,11 @@
               </div>
             </el-tab-pane>
             
-            <el-tab-pane label="無人機" name="drones">
+            <el-tab-pane label="DJI" name="drones">
               <div class="products-grid">
                 <div 
                   class="product-item"
-                  v-for="product in droneProducts"
+                  v-for="product in DJIProducts"
                   :key="product.id"
                   @click="viewProduct(product)"
                 >
@@ -107,7 +107,7 @@
                       <el-tag 
                         v-for="feature in product.features" 
                         :key="feature"
-                        size="mini"
+                        size="small"
                         class="feature-tag"
                       >
                         {{ feature }}
@@ -143,7 +143,7 @@
                       <el-tag 
                         v-for="feature in product.features" 
                         :key="feature"
-                        size="mini"
+                        size="small"
                         class="feature-tag"
                       >
                         {{ feature }}
@@ -282,15 +282,15 @@ export default {
         },
         {
           id: 2,
-          name: '專業無人機',
-          description: 'DJI、Autel、Parrot等品牌專業無人機及配件',
+          name: 'DJI产品',
+          description: 'DJI 無人機, 手持设备等產品',
           image: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop',
           productCount: 80
         },
         {
           id: 3,
-          name: '珠寶首飾',
-          description: '黃金、鑽石、翡翠、銀飾等各類精美珠寶首飾',
+          name: '首飾',
+          description: '手链，天珠和琥珀等各類精美首飾',
           image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
           productCount: 200
         }
@@ -343,7 +343,7 @@ export default {
       ],
       
       // 無人機產品
-      droneProducts: [
+      DJIProducts: [
         {
           id: 1,
           name: 'DJI Mini 4 Pro',
@@ -364,20 +364,6 @@ export default {
           specs: '三攝系統 | 43分鐘飛行 | 專業攝影',
           image: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=300&h=300&fit=crop',
           features: ['三攝系統', '43分鐘', '專業攝影', 'Cine模式']
-        },
-        {
-          id: 4,
-          name: 'Autel EVO Lite+',
-          specs: '6K攝像頭 | 40分鐘飛行 | 三軸雲台',
-          image: 'https://images.unsplash.com/photo-1551808525-51a94da548ce?w=300&h=300&fit=crop',
-          features: ['6K攝像', '40分鐘', '三軸雲台', '智能跟隨']
-        },
-        {
-          id: 5,
-          name: 'Parrot ANAFI Ai',
-          specs: '4G連接 | 32分鐘飛行 | AI功能',
-          image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop',
-          features: ['4G連接', '32分鐘', 'AI功能', '180°雲台']
         },
         {
           id: 6,
@@ -434,17 +420,6 @@ export default {
         }
       ],
       
-      // 品牌
-      brands: [
-        { id: 1, name: 'Apple', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Apple-Logo.png' },
-        { id: 2, name: 'DJI', logo: 'https://logos-world.net/wp-content/uploads/2022/01/DJI-Logo.png' },
-        { id: 3, name: 'Autel', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=Autel' },
-        { id: 4, name: 'Parrot', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=Parrot' },
-        { id: 5, name: 'Tiffany', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=Tiffany' },
-        { id: 6, name: 'Cartier', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=Cartier' },
-        { id: 7, name: 'Chow Tai Fook', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=周大福' },
-        { id: 8, name: 'Chow Sang Sang', logo: 'https://via.placeholder.com/120x60/f0f0f0/666?text=周生生' }
-      ],
       
       // 優勢
       advantages: [

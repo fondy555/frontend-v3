@@ -27,7 +27,29 @@ export function getProductById(id) {
   });
 }
 
+// 根據分類id獲取商品
+export function getProductsByCategoryID(categoryId) {
+  return request({
+    url: `/v1/products/getProductsByCategoryID/${categoryId}`, // 替换为你的后端接口路径
+    method: 'get', 
+  })  
+}
 
+// 根據brand ID獲取商品
+export function getProductsByBrandId(brandId) {
+  return request({
+    url: `/v1/products/getProductsByBrandId/${brandId}`, // 替换为你的后端接口路径
+    method: 'get',
+  })
+}
+
+// 根據名稱獲取商品
+export function getProductsByName(name) {
+  return request({
+    url: `/v1/products/getProductsByName/${name}`, // 替换为你的后端接口路径
+    method: 'get',
+  })
+}
 
 
 // 上传图片
