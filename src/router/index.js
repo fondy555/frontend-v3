@@ -3,7 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
     {
         path: '/',
-        redirect: '/index',
+        redirect: '/home',
     },
     // {
     //     path: '/productService',
@@ -72,7 +72,7 @@ const routes = [
         },
         children: [
                 {
-                    path: '/admin/info',
+                    path: 'info',
                     name: 'Info',
                     component: () => import('@/views/admin/Info.vue'),
                     meta: {
@@ -80,7 +80,7 @@ const routes = [
                     }
                 },
                 {
-                path: '/admin/productList',
+                path: 'productList',
                 name: 'adminProductList',
                 component: () => import('@/views/admin/ProductList.vue'),
                     meta: {
@@ -88,20 +88,60 @@ const routes = [
                     }
                 },
                 {
-                    path: '/admin/Product/:id',
+                    path: 'product/:id',
                     name: 'adminProduct',
                     // component: () => import('@/views/front/components/ProductDetail.vue'),
                     component: () => import('@/views/admin/ProductInfo.vue'),
-                        meta: {
-                            title: '商品信息'
-                        }
+                    meta: {
+                        title: '商品信息'
+                    }
                 },
                 {
-                    path: '/admin/ProductEdit/:id?',
+                    path: 'productEdit/:id?',
                     name: 'adminProductEdit',
                     component: () => import('@/views/admin/ProductEdit.vue'),
                     meta: {
                         title: '編輯商品'
+                    }
+                },
+                {
+                    path: 'dashboard',
+                    name: 'Dashboard',
+                    component: () => import('@/views/admin/Dashboard.vue'), 
+                    meta: {
+                        title: '儀表盤'
+                    }
+                },
+                {
+                    path: 'orderList',
+                    name: 'OrderList',
+                    component: () => import('@/views/admin/OrderList.vue'),
+                    meta: {
+                        title: '訂單列表'
+                    }
+                },
+                {
+                    path: 'categories',
+                    name: 'Categories',
+                    component: () => import('@/views/admin/Categories.vue'),
+                    meta: {
+                        title: '商品分類' 
+                    }
+                },
+                {
+                    path: 'brandList',
+                    name: 'BrandList',
+                    component: () => import('@/views/admin/BrandList.vue'),
+                    meta: {
+                        title: '品牌管理' 
+                    }
+                },
+                {
+                    path: 'brandEdit/:id?',
+                    name: 'BrandEdit',
+                    component: () => import('@/views/admin/BrandEdit.vue'),
+                    meta: {
+                        title: '品牌編輯' 
                     }
                 }
                 

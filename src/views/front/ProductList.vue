@@ -231,18 +231,35 @@ export default {
       CategoryMap: []
     }
   },
-    mounted() {
-      const {categoryID, method} = this.$route.query
-      if (method == "getProductsByCategoryId") {
-        this.fetchProductsByCategoryID(categoryID)
+  mounted() {
+    const {categoryID, method} = this.$route.query
+    if (method == "getProductsByCategoryId") {
+      this.fetchProductsByCategoryID(categoryID)
+    } else {
+      this.fetchProducts()
+    }
+    // console.log("method: ", method) 
+      // this.fetchProducts();
+      this.fetchAllCategories();
+      this.fetchAllBrands();
+  },
+  watch: {
+    // 监听 query 参数的变化
+    '$route.query'(newQuery) {
+      this.productId = newQuery.categoryID;
+      this.productMethod = newQuery.method;
+      // 在这里可以执行一些副作用，例如 API 请求
+      console.log('New query:', newQuery);
+      // console.log('Old query:', oldQuery);
+      if (this.productMethod == "getProductsByCategoryId") {
+        // console.log(newQuery.id)
+        this.fetchProductsByCategoryID(this.productId)
       } else {
         this.fetchProducts()
-      }
-      // console.log("method: ", method) 
-        // this.fetchProducts();
-        this.fetchAllCategories();
-        this.fetchAllBrands();
-    },
+     }
+      // this.fetchProductData(); // 例如获取新数据
+    }
+  },
   computed: {
     filteredProducts() {
       let products = [...this.allProducts]

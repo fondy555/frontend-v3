@@ -429,7 +429,7 @@ export default {
     fetchAllCategories() {
       getAllCategories().then(response => {
           this.CategoryMap = response.data; // 访问response.data
-          console.log(this.CategoryMap)
+          // console.log(this.CategoryMap)
       }).catch(error => {
           console.error('Failed to fetch categories:', error);
       });

@@ -15,6 +15,7 @@
           <i class="el-icon-service"></i>
           專業服務
         </span>
+
       </div>
     </div>
   </div>
@@ -43,17 +44,41 @@
         </el-input>
       </div>
 
+			<div class="login">
+				<div v-if="!isLogin" class="btn">
+					<div @click="login">登錄</div>
+					<!-- <div @click="login('add')">注冊</div> -->
+				</div>
+				<div v-else class="loginOut">
+					<el-dropdown trigger="hover">
+						<div class="avatar-wrapper">
+							<el-avatar :src='require("@/assets/avatar.png")'></el-avatar>
+							<span style="font-size: 12px;margin-left:10px">{{ name }}</span>
+						</div>
+            <template #dropdown>
+						<el-dropdown-menu>
+							<el-dropdown-item @click="backend">
+								<span>後臺管理</span>
+							</el-dropdown-item>
+							<el-dropdown-item divided @click="logout">
+								<span>退出登錄</span>
+              </el-dropdown-item>
+						</el-dropdown-menu>
+            </template>
+					</el-dropdown>
+				</div>
+			</div>
       <!-- 聯繫信息 -->
-      <div class="contact-info">
+      <!-- <div class="contact-info">
         <div class="contact-item">
           <i class="el-icon-phone"></i>
-          <span></span>
+
         </div>
         <div class="contact-item">
           <i class="el-icon-message"></i>
           <span></span>
         </div>
-      </div>
+      </div> -->
     </div>
   </header>
 
@@ -86,9 +111,12 @@
 </template>
 
 <script>
+import {mapGetters, mapActions } from "vuex";
+
 export default {
   data() {
     return {
+      isLogin: null,
       searchQuery: '',
       activeIndex: 'home',
       menuItems: [
@@ -139,7 +167,29 @@ export default {
       ]
     };
   },
+  computed: {
+  ...mapGetters(["avatar", "name", "roles"]), 
+  },
+  mounted () {
+           const token = localStorage.getItem("token");
+        // console.log("Token:", token); // 调试代码，检查 token 是否正确读取
+        this.isLogin = token ? true : false;
+
+        if (this.isLogin) {
+          this.getInfo();
+
+        }
+
+        const cachedFooterData = localStorage.getItem('footerData');
+        if (cachedFooterData) {
+            const footerData = JSON.parse(cachedFooterData);
+            this.$nextTick(() => {
+                this.logoImage = footerData.beianImage; // 从缓存中读取 beianImage
+            });
+        } 
+  },
   methods: {
+    ...mapActions('user', ['getInfo']),
     handleSearch() {
       // 搜索处理逻辑
     },
@@ -169,7 +219,27 @@ export default {
           method: method
         },
       });
-    }
+    },
+    logout() {
+        this.$message.success('退出成功')
+        localStorage.removeItem('token')
+        this.isLogin = false
+        this.$router.replace({
+            path: '/login'
+        })
+    },
+    login(e) {
+        if (e == 'add') {
+            this.$router.push('/register')
+        } else {
+            this.$router.push('/login')
+        }
+    },
+    backend() {
+        this.$router.push({
+            path: '/admin/productList'
+        })
+    },
   }
 };
 </script>
@@ -219,6 +289,42 @@ export default {
   font-size: 14px;
 }
 
+.login {
+      display: flex;
+      align-items: center;
+
+
+      .loginOut {
+        line-height: 72px;
+
+        .user-avatar {
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          border-radius: 10px;
+          margin: -5px 0 0 5px;
+        }
+
+        .avatar-wrapper {
+          display: flex;
+          align-items: center;
+          height: 72px;
+        }
+      }
+
+      .btn {
+        display: flex;
+
+        div {
+          width: 50px;
+          height: 72px;
+          line-height: 72px;
+          text-align: center;
+          cursor: pointer;
+        }
+      }
+    }
+
 /* 主頭部 */
 .main-header {
   background: white;
@@ -263,19 +369,21 @@ export default {
   width: 100%;
 }
 
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.login-button {
+  background-color: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #666;
-  font-size: 14px;
+.login-button:hover {
+  background-color: #556cd6;
 }
+
 
 /* 主導航 */
 .main-navigation {
