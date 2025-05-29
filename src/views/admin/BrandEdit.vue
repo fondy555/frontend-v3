@@ -55,7 +55,7 @@
                           v-model="form.name" 
                           placeholder="请输入品牌中文名称"
                           size="large"
-                          :prefix-icon="Edit"
+                          :prefix-icon="'Edit'"
                         />
                       </el-form-item>
                     </el-col>
@@ -65,7 +65,7 @@
                           v-model="form.englishName" 
                           placeholder="请输入品牌英文名称"
                           size="large"
-                          :prefix-icon="Edit"
+                          :prefix-icon="'Edit'"
                         />
                       </el-form-item>
                     </el-col>
@@ -102,7 +102,7 @@
                     <el-icon><Picture /></el-icon>
                     <span>品牌Logo</span>
                   </div>
-                  <el-form-item label="上传Logo" prop="logo" class="form-item">
+                  <el-form-item label="" prop="logo" class="form-item">
                     <div class="logo-upload-container">
                       <el-upload
                         class="logo-uploader"
@@ -123,7 +123,7 @@
                           <div v-else class="upload-placeholder">
                             <el-icon class="upload-icon"><Plus /></el-icon>
                             <div class="upload-text">
-                              <p class="upload-title" style="text-align: center;">上传品牌Logo</p>
+                              <p class="upload-title">上传品牌Logo</p>
                               <p class="upload-subtitle">点击或拖拽文件到此区域</p>
                             </div>
                           </div>
@@ -259,100 +259,102 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+<script>
+// import { ref, reactive, computed, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { 
   Plus, Edit, Check, Close, Delete, ArrowLeft, Star, Setting, Picture, 
   View, Shop, InfoFilled, QuestionFilled, SuccessFilled, WarningFilled
-} from '@element-plus/icons-vue'
+} from '@element-plus/icons-vue';
+import { ref } from 'vue';
+// import { fa } from 'element-plus/es/locale';
 
-const route = useRoute()
-const router = useRouter()
+export default {
+  components: {
+    Plus, Edit, Check, Close, Delete, ArrowLeft, Star, Setting, Picture,
+    View, Shop, InfoFilled, QuestionFilled, SuccessFilled, WarningFilled
+  },
+  data() {
+    return {
 
-const formRef = ref()
-const loading = ref(false)
+      loading: false,
+      form: {
+        name: '',
+        englishName: '',
+        status: 1,
+        logo: ''
+      },
+      formRef: ref(this.form),
+      rules: {
+        name: [
+          { required: true, message: '请输入品牌名称', trigger: 'blur' },
+          { min: 2, max: 30, message: '品牌名称长度在 2 到 30 个字符', trigger: 'blur' }
+        ]
+      },
+    } 
+  },
+  computed: {
+      isEdit() {
+        return !!this.$route.query.id
+      } 
+  },
+  methods: {
+    handleLogoChange(file) {
+      const reader = new FileReader()  
+      reader.onload = (e) => {
+        this.form.logo = e.target.result
+     }
+     reader.readAsDataURL(file.raw)
+    },
 
-const form = reactive({
-  name: '',
-  englishName: '',
-  status: 1,
-  logo: ''
-})
+    async handleSubmit() {
+      try {
+        await this.formRef.validate()
+        this.loading = true
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        ElMessage.success(this.isEdit ? '品牌更新成功' : '品牌创建成功')
+        this.router.push('/brand-list')
+      } catch(error) {
+        console.error('表单验证失败:', error)
+          
+      }finally {
+        this.loading = false
+      }
+    },
+    handleCancel() {
+      this.router.back() 
+    },
 
-const rules = {
-  name: [
-    { required: true, message: '请输入品牌名称', trigger: 'blur' },
-    { min: 2, max: 30, message: '品牌名称长度在 2 到 30 个字符', trigger: 'blur' }
-  ]
-}
-
-const isEdit = computed(() => !!route.query.id)
-
-// Logo上传处理
-const handleLogoChange = (file) => {
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    form.logo = e.target.result
-  }
-  reader.readAsDataURL(file.raw)
-}
-
-const handleSubmit = async () => {
-  try {
-    await formRef.value.validate()
-    loading.value = true
+    async handleDelete() {
+      try {
+        await ElMessageBox.confirm('确定要删除该品牌吗?', '删除品牌', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        this.loading = true
+        ElMessage.success('品牌删除成功')
+        this.router.push('/brand-list'  )
+      } catch(error) {
+        console.error('删除品牌失败:', error) 
+      } finally {
+        this.loading = false
+      }
+    },
     
-    // 模拟API请求
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    ElMessage.success(isEdit.value ? '品牌更新成功' : '品牌创建成功')
-    router.push('/brand-list')
-  } catch (error) {
-    console.error('表单验证失败:', error)
-  } finally {
-    loading.value = false
+    onMounted() {
+    if (this.isEdit) {
+      // 模拟加载编辑数据
+        Object.assign(this.form, {
+          name: '苹果',
+          englishName: 'Apple',
+          status: 1,
+          logo: '/placeholder.svg?height=80&width=200'
+        })
+      }
+    }
   }
 }
-
-const handleCancel = () => {
-  router.back()
-}
-
-const handleDelete = async () => {
-  try {
-    await ElMessageBox.confirm('确定要删除该品牌吗？删除后不可恢复！', '警告', {
-      confirmButtonText: '确定删除',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-    
-    loading.value = true
-    // 模拟删除API请求
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    ElMessage.success('品牌删除成功')
-    router.push('/brand-list')
-  } catch {
-    // 用户取消操作
-  } finally {
-    loading.value = false
-  }
-}
-
-// 如果是编辑模式，加载品牌数据
-onMounted(() => {
-  if (isEdit.value) {
-    // 模拟加载编辑数据
-    Object.assign(form, {
-      name: '苹果',
-      englishName: 'Apple',
-      status: 1,
-      logo: '/placeholder.svg?height=80&width=200'
-    })
-  }
-})
 </script>
 
 <style scoped>
@@ -555,8 +557,8 @@ onMounted(() => {
 }
 
 .upload-area {
-  width: 240px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   border: 2px dashed #d1d5db;
   border-radius: 12px;
   cursor: pointer;
@@ -633,6 +635,7 @@ onMounted(() => {
 }
 
 .upload-title {
+  text-align: center;
   font-weight: 500;
   margin: 0 0 4px 0;
   color: #374151;
@@ -721,8 +724,8 @@ onMounted(() => {
 }
 
 .logo-container {
-  width: 200px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   margin: 0 auto;
   border-radius: 8px;
   overflow: hidden;
@@ -847,8 +850,9 @@ onMounted(() => {
   }
   
   .upload-area {
-    width: 100%;
-    max-width: 240px;
+    width: 140px;
+    height: 140px;
+    max-width: none;
     margin: 0 auto;
   }
   
