@@ -13,3 +13,30 @@ export function getAllBrands() {
       throw error;
     });
 }
+
+export function getBrandsById(Id) {
+  return request({
+    url: `/v1/brands/getBrandsById?Id=${Id}`,
+    method: 'get', 
+  }).then(response => {
+    // console.log('API request successful:', response); // 打印API请求成功的响应
+    return response; // 返回整个response对象 
+  }).catch(error => {
+    console.error('獲取品牌失敗:', error); // 打印API请求失败的错误
+    throw error; 
+  })
+}
+
+export function addBrand(brand) {
+  return request({
+    url: '/v1/brands/addBrand',
+    method: 'post',
+    data: brand 
+  }).then(response => {
+    // console.log('API request successful:', response); // 打印API请求成功的响应
+    return response; // 返回整个response对象 
+  }).catch(error => {
+    // console.error('添加品牌失敗:', error); // 打印API请求失败的错误
+    throw error;
+  })
+}

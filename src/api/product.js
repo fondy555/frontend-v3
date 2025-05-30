@@ -151,3 +151,11 @@ export function updateProduct(data) {
     throw error; 
   })
 }
+
+export function uploadLogo(file) {
+  return request({
+    url: '/v1/logos/uploadLogo',
+    method: 'post',
+    file 
+  })
+}

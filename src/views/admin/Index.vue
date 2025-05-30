@@ -123,7 +123,7 @@ const router = useRouter()
 
 // 响应式数据
 const isCollapse = ref(false)
-const userAvatar = ref('/placeholder.svg?height=32&width=32')
+const userAvatar = ref('')
 
 // 计算当前激活的菜单
 const activeMenu = computed(() => route.path)

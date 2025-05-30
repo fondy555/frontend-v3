@@ -60,9 +60,9 @@
                       </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                      <el-form-item label="品牌英文名" prop="englishName" class="form-item">
+                      <el-form-item label="品牌英文名" prop="name_en" class="form-item">
                         <el-input 
-                          v-model="form.englishName" 
+                          v-model="form.name_en" 
                           placeholder="请输入品牌英文名称"
                           size="large"
                           :prefix-icon="'Edit'"
@@ -78,8 +78,8 @@
                     <el-icon><Setting /></el-icon>
                     <span>状态设置</span>
                   </div>
-                  <el-form-item label="品牌状态" prop="status" class="form-item">
-                    <el-radio-group v-model="form.status" class="status-radio-group">
+                  <el-form-item label="品牌状态" prop="is_enabled" class="form-item">
+                    <el-radio-group v-model="form.is_enabled" class="status-radio-group">
                       <el-radio :value="1" class="status-radio status-active">
                         <div class="radio-content">
                           <el-icon><Check /></el-icon>
@@ -208,20 +208,20 @@
                 <div class="preview-info">
                   <div class="brand-names">
                     <h3 class="brand-name-cn">{{ form.name || '品牌中文名' }}</h3>
-                    <p class="brand-name-en">{{ form.englishName || 'Brand English Name' }}</p>
+                    <p class="brand-name-en">{{ form.name_en || 'Brand English Name' }}</p>
                   </div>
                   
                   <div class="brand-status">
                     <el-tag 
-                      :type="form.status === 1 ? 'success' : 'danger'" 
+                      :type="form.is_enabled === 1 ? 'success' : 'danger'" 
                       size="large"
                       class="status-tag"
                     >
                       <el-icon>
-                        <Check v-if="form.status === 1" />
+                        <Check v-if="form.is_enabled === 1" />
                         <Close v-else />
                       </el-icon>
-                      {{ form.status === 1 ? '启用状态' : '禁用状态' }}
+                      {{ form.is_enabled === 1 ? '启用状态' : '禁用状态' }}
                     </el-tag>
                   </div>
                 </div>
@@ -266,8 +266,9 @@ import {
   Plus, Edit, Check, Close, Delete, ArrowLeft, Star, Setting, Picture, 
   View, Shop, InfoFilled, QuestionFilled, SuccessFilled, WarningFilled
 } from '@element-plus/icons-vue';
-import { ref } from 'vue';
-// import { fa } from 'element-plus/es/locale';
+import { addBrand } from '@/api/brands'
+import { uploadLogo } from '@/api/product'
+
 
 export default {
   components: {
@@ -280,16 +281,19 @@ export default {
       loading: false,
       form: {
         name: '',
-        englishName: '',
-        status: 1,
+        name_en: '',
+        is_enabled: 1,
         logo: ''
       },
-      formRef: ref(this.form),
       rules: {
         name: [
           { required: true, message: '请输入品牌名称', trigger: 'blur' },
           { min: 2, max: 30, message: '品牌名称长度在 2 到 30 个字符', trigger: 'blur' }
-        ]
+        ],
+        name_en: [
+          { required: true, message: '请输入品牌英文名称', trigger: 'blur' },
+          { min: 2, max: 30, message: '品牌英文名称长度在 2 到 30 个字符', trigger: 'blur' }
+        ],
       },
     } 
   },
@@ -300,6 +304,9 @@ export default {
   },
   methods: {
     handleLogoChange(file) {
+      const formData = new FormData()
+      formData.append("file", file);
+      console.log(file.url)
       const reader = new FileReader()  
       reader.onload = (e) => {
         this.form.logo = e.target.result
@@ -309,20 +316,28 @@ export default {
 
     async handleSubmit() {
       try {
-        await this.formRef.validate()
+        await this.$refs.formRef.validate()
         this.loading = true
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        ElMessage.success(this.isEdit ? '品牌更新成功' : '品牌创建成功')
-        this.router.push('/brand-list')
+        console.log(this.form)
+        // console.log(this.$refs.formRef)
+        addBrand(this.form).then(() => {
+          ElMessage.success(this.isEdit? '品牌更新成功' : '品牌创建成功')
+          // this.$router.push('/admin/brandList')
+        }).catch(err => {
+          ElMessage.error('品牌创建失败: ', err) 
+        })
+        // await new Promise(resolve => setTimeout(resolve, 1000))
+        // ElMessage.success(this.isEdit ? '品牌更新成功' : '品牌创建成功')
+        // this.router.push('/brand-list')
       } catch(error) {
-        console.error('表单验证失败:', error)
+        ElMessage.error('表单验证失败:', error)
           
       }finally {
         this.loading = false
       }
     },
     handleCancel() {
-      this.router.back() 
+      this.$router.back() 
     },
 
     async handleDelete() {
@@ -334,7 +349,7 @@ export default {
         })
         this.loading = true
         ElMessage.success('品牌删除成功')
-        this.router.push('/brand-list'  )
+        this.$router.push('/brand-list'  )
       } catch(error) {
         console.error('删除品牌失败:', error) 
       } finally {
@@ -349,7 +364,7 @@ export default {
           name: '苹果',
           englishName: 'Apple',
           status: 1,
-          logo: '/placeholder.svg?height=80&width=200'
+          logo: ''
         })
       }
     }
