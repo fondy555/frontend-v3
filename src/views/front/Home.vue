@@ -158,8 +158,8 @@
       </div>
     </section>
 
- 
-    <section class="contact-section">
+    <NewFooter />
+    <!-- <section class="contact-section">
       <div class="container">
         <div class="contact-content">
           <div class="contact-info">
@@ -200,61 +200,21 @@
               </div>
             </div>
           </div>
-          
-          <div class="contact-form">
-            <h4 class="form-title">產品諮詢</h4>
-            <el-form :model="inquiryForm" label-width="80px">
-              <el-form-item label="姓名">
-                <el-input v-model="inquiryForm.name" placeholder="請輸入您的姓名"></el-input>
-              </el-form-item>
-              
-              <el-form-item label="公司">
-                <el-input v-model="inquiryForm.company" placeholder="請輸入公司名稱"></el-input>
-              </el-form-item>
-              
-              <el-form-item label="電話">
-                <el-input v-model="inquiryForm.phone" placeholder="請輸入聯繫電話"></el-input>
-              </el-form-item>
-              
-              <el-form-item label="郵箱">
-                <el-input v-model="inquiryForm.email" placeholder="請輸入郵箱地址"></el-input>
-              </el-form-item>
-              
-              <el-form-item label="產品">
-                <el-select v-model="inquiryForm.product" placeholder="請選擇感興趣的產品" style="width: 100%">
-                  <el-option label="蘋果產品" value="apple"></el-option>
-                  <el-option label="無人機" value="drone"></el-option>
-                  <el-option label="珠寶首飾" value="jewelry"></el-option>
-                  <el-option label="全部產品" value="all"></el-option>
-                </el-select>
-              </el-form-item>
-              
-              <el-form-item label="留言">
-                <el-input
-                  type="textarea"
-                  v-model="inquiryForm.message"
-                  placeholder="請描述您的需求"
-                  :rows="4"
-                ></el-input>
-              </el-form-item>
-              
-              <el-form-item>
-                <el-button type="primary" @click="submitInquiry" :loading="submitting">
-                  {{ submitting ? '提交中...' : '提交諮詢' }}
-                </el-button>
-                <el-button @click="resetForm">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
+        
         </div>
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 
 <script>
+import NewFooter from './components/NewFooter.vue';
+// import { getProductsByBrandId } from '@/api/product';
 
 export default {
+  components: {
+    NewFooter, 
+  },
   data() {
     return {
       searchQuery: '',
@@ -278,21 +238,24 @@ export default {
           name: '蘋果產品',
           description: '最新iPhone、iPad、AirPods、Apple Watch等全系列蘋果產品',
           image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop',
-          productCount: 150
+          productCount: 150,
+          brand: '1'
         },
         {
           id: 2,
           name: 'DJI产品',
           description: 'DJI 無人機, 手持设备等產品',
           image: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop',
-          productCount: 80
+          productCount: 80,
+          brand: '2'
         },
         {
           id: 3,
           name: '首飾',
           description: '手链，天珠和琥珀等各類精美首飾',
           image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
-          productCount: 200
+          productCount: 200,
+          brand: '3'
         }
       ],
       
@@ -469,41 +432,22 @@ export default {
       this.$message.info(`搜索產品: ${this.searchQuery}`);
     },
     
-    // 菜單選擇
-    handleMenuSelect(key) {
-      this.activeIndex = key;
-      this.$message.info(`瀏覽: ${key}`);
-    },
-    
     // 分類點擊
-    handleCategoryClick(category) {
-      this.$message.info(`查看分類: ${category.name}`);
+    handleCategoryClick() {
+      // this.$message.info(`查看分類: ${category.name}`);
+      // getProductsByBrandId(category.brand)
+      this.$router.push('/productList/')
     },
     
     // 標籤頁切換
     handleTabClick(tab) {
-      this.$message.info(`切換到: ${tab.label}`);
+      this.$message.info(`切換到: ${tab.props.label}`);
+      // console.log(tab.props.label)
     },
     
     // 查看產品
     viewProduct(product) {
       this.$message.info(`查看產品: ${product.name}`);
-    },
-    
-    // 提交諮詢
-    submitInquiry() {
-      if (!this.inquiryForm.name || !this.inquiryForm.phone || !this.inquiryForm.email) {
-        this.$message.warning('請填寫必要的聯繫信息');
-        return;
-      }
-      
-      this.submitting = true;
-      
-      setTimeout(() => {
-        this.submitting = false;
-        this.$message.success('諮詢提交成功，我們會盡快與您聯繫！');
-        this.resetForm();
-      }, 2000);
     },
     
     // 重置表單
@@ -610,19 +554,6 @@ export default {
   width: 100%;
 }
 
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #666;
-  font-size: 14px;
-}
 
 /* 主導航 */
 .main-navigation {
@@ -752,6 +683,7 @@ export default {
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
 /* 通用樣式 */
 .container {
   max-width: 1200px;
@@ -1047,83 +979,7 @@ export default {
   line-height: 1.6;
 }
 
-/* 聯繫我們 */
-.contact-section {
-  padding: 80px 0;
-  background: white;
-}
 
-.contact-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-}
-
-.contact-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-.contact-subtitle {
-  color: #7f8c8d;
-  margin-bottom: 40px;
-}
-
-.contact-details {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.contact-details .contact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-}
-
-.contact-details .contact-item i {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.contact-text {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.contact-text strong {
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.contact-text span {
-  color: #7f8c8d;
-}
-
-.contact-form {
-  background: #f8f9fa;
-  border-radius: 15px;
-  padding: 40px;
-}
-
-.form-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 25px;
-  text-align: center;
-}
 
 /* 響應式設計 */
 @media (max-width: 768px) {
@@ -1147,9 +1003,6 @@ export default {
     width: 100%;
   }
   
-  .contact-info {
-    align-items: center;
-  }
   
   .hero-content {
     grid-template-columns: 1fr;

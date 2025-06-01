@@ -108,12 +108,17 @@
     </div>
   </nav>
   <router-view />
+  <!-- <NewFooter /> -->
 </template>
 
 <script>
+
 import {mapGetters, mapActions } from "vuex";
 
 export default {
+  components: {
+
+  },
   data() {
     return {
       isLogin: null,

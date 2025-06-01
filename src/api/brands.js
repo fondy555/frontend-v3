@@ -40,3 +40,30 @@ export function addBrand(brand) {
     throw error;
   })
 }
+
+// 刪除品牌
+export function deleteBrand(id) {
+  return request({
+    url: `/v1/brands/deleteBrand/${id}`,
+    method: 'delete', 
+  })  
+}
+
+// 更新品牌
+export function updateBrand(brand) {
+  return request({
+    url: '/v1/brands/updateBrand',
+    method: 'put',
+    data: brand 
+  })  
+}
+
+
+// 根據頁數獲取品牌
+export function getBrandsByPage(search) {
+  return request({
+    url: `/v1/brands/getBrandsByPage`,
+    method: 'post',
+    data: search
+  }) 
+}

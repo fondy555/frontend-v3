@@ -38,7 +38,7 @@ export function getProductsByCategoryID(categoryId) {
 // 根據brand ID獲取商品
 export function getProductsByBrandId(brandId) {
   return request({
-    url: `/v1/products/getProductsByBrandId/${brandId}`, // 替换为你的后端接口路径
+    url: `/v1/products/getProductsByBrandID/${brandId}`, // 替换为你的后端接口路径
     method: 'get',
   })
 }

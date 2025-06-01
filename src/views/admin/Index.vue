@@ -10,6 +10,15 @@
           class="collapse-btn"
         />
         <h1 class="logo">管理后台</h1>
+        <!-- 添加返回首页按钮 -->
+        <el-button
+          :icon="House"
+          @click="goToHome"
+          text
+          class="home-btn"
+        >
+          返回首页
+        </el-button>
       </div>
       
       <div class="header-right">
@@ -21,8 +30,6 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-              <el-dropdown-item command="settings">设置</el-dropdown-item>
               <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -67,7 +74,7 @@
             <el-menu-item index="/order-statistics">订单统计</el-menu-item>
           </el-sub-menu>
 
-          <el-sub-menu index="users">
+          <el-sub-menu index="users" disabled>
             <template #title>
               <el-icon><User /></el-icon>
               <span>用户管理</span>
@@ -76,9 +83,9 @@
             <el-menu-item index="/user-roles">角色权限</el-menu-item>
           </el-sub-menu>
 
-          <el-menu-item index="/settings">
+          <el-menu-item index="/admin/info">
             <el-icon><Setting /></el-icon>
-            <template #title>系统设置</template>
+            <template #title>信息設置</template>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -151,6 +158,10 @@ const handleMenuSelect = (index) => {
   if (route.path !== index) {
     router.push(index)
   }
+}
+
+const goToHome = () => {
+  router.push('/') 
 }
 
 const handleCommand = (command) => {

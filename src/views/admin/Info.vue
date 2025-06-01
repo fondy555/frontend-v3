@@ -6,14 +6,17 @@
                 <!-- <img src="@/assets/avatar.png" width="100px" height="100px" alt=""> -->
             </div>
             <el-form :model="footerData" label-width="120px" class="input-width">
-                <el-form-item label="首页标题">
+                <!-- <el-form-item label="首页标题">
                     <el-input v-model="footerData.homeTitle"></el-input>
-                </el-form-item>
-                <el-form-item label="首页描述">
+                </el-form-item> -->
+                <!-- <el-form-item label="首页描述">
                     <el-input v-model="footerData.homeDescription" type="textarea" :rows="3"></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="电话">
                     <el-input v-model="footerData.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="Whatsapp">
+                    <el-input v-model="footerData.whatsApp"></el-input>
                 </el-form-item>
                 <el-form-item label="邮箱">
                     <el-input v-model="footerData.email"></el-input>
@@ -21,28 +24,26 @@
                 <el-form-item label="地址">
                     <el-input v-model="footerData.address"></el-input>
                 </el-form-item>
-                <el-form-item label="网站logo">
+                <!-- <el-form-item label="网站logo">
                     <el-input v-model="footerData.beianImage"></el-input>
                     <el-upload ref="logoUpload" class="upload-demo" :action="uploadUrl" :before-upload="beforeLogoUpload"
                         :on-success="handleLogoUploadSuccess" :show-file-list="false">
                         <el-button size="small" type="primary">上传logo</el-button>
                     </el-upload>
-                </el-form-item>
-                <el-form-item label="微信客服二维码">
+                </el-form-item> -->
+                <el-form-item label="微信二维码">
                     <el-input v-model="footerData.weChatImage"></el-input>
                     <el-upload ref="upload" class="upload-demo" :action="uploadUrl" :before-upload="beforeUpload"
                         :on-success="handleUploadSuccess" :show-file-list="false">
                         <el-button size="small" type="primary">上传图片</el-button>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="ICP">
-                    <el-input v-model="footerData.icp"></el-input>
-                </el-form-item>
-                <el-form-item label="公安信息">
-                    <el-input v-model="footerData.publicSecurity"></el-input>
-                </el-form-item>
-                <el-form-item label="版权">
-                    <el-input v-model="footerData.copyright"></el-input>
+                <el-form-item label="FaceBook二维码">
+                    <el-input v-model="footerData.faceBookImage"></el-input>
+                    <el-upload ref="upload" class="upload-demo" :action="uploadUrl" :before-upload="beforeUpload"
+                        :on-success="handleUploadSuccess" :show-file-list="false">
+                        <el-button size="small" type="primary">上传图片</el-button>
+                    </el-upload>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="saveFooterData">保存</el-button>
@@ -64,15 +65,11 @@ export default {
             footerData: {
                 id: 1,
                 phone: '',
+                whatsApp: '',
                 email: '',
                 address: '',
                 weChatImage: '',
-                beianImage: '',
-                icp: '',
-                publicSecurity: '',
-                copyright: '' ,
-                homeTitle: '', // 新增字段
-                homeDescription: '' // 新增字段
+                faceBookImage: ''
             },
             uploadUrl: '/v1/fileUpload/upload' // 修改为相对路径
         };

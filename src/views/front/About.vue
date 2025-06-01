@@ -285,71 +285,77 @@
     </section>
 
     <!-- 聯繫我們 -->
-    <section class="contact-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">聯繫我們</h2>
-          <p class="section-subtitle">期待與您的合作</p>
-        </div>
-        
-        <div class="contact-content">
-          <div class="contact-info">
-            <div class="contact-item">
-              <div class="contact-icon">
-                <i class="el-icon-location-outline"></i>
-              </div>
-              <div class="contact-details">
-                <h4>公司地址</h4>
-                <p>中國廣東省深圳市福田區<br>國際貿易中心大廈</p>
-              </div>
+  <!-- <section class="contact-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">聯繫我們</h2>
+        <p class="section-subtitle">期待與您的合作</p>
+      </div>
+      
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="el-icon-location-outline"></i>
             </div>
-            
-            <div class="contact-item">
-              <div class="contact-icon">
-                <i class="el-icon-phone-outline"></i>
-              </div>
-              <div class="contact-details">
-                <h4>聯繫電話</h4>
-                <p>+86-755-1234-5678<br>+86-138-0000-0000</p>
-              </div>
+            <div class="contact-details">
+              <h4>公司地址</h4>
+              <p>{{ contactForm.address }}</p>
             </div>
-            
-            <div class="contact-item">
-              <div class="contact-icon">
-                <i class="el-icon-message"></i>
-              </div>
-              <div class="contact-details">
-                <h4>電子郵箱</h4>
-                <p>info@company.com<br>sales@company.com</p>
-              </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="el-icon-phone-outline"></i>
             </div>
-            
-            <div class="contact-item">
-              <div class="contact-icon">
-                <i class="el-icon-chat-dot-round"></i>
-              </div>
-              <div class="contact-details">
-                <h4>即時通訊</h4>
-                <p>WhatsApp: +86-138-0000-0000<br>WeChat: company_sales</p>
-              </div>
+            <div class="contact-details">
+              <h4>聯繫電話</h4>
+              <p>{{ contactForm.phone }}</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="el-icon-message"></i>
+            </div>
+            <div class="contact-details">
+              <h4>電子郵箱</h4>
+              <p>{{ contactForm.email }}</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="el-icon-chat-dot-round"></i>
+            </div>
+            <div class="contact-details">
+              <h4>即時通訊</h4>
+              <p>WhatsApp: {{ contactForm.whatsApp }}</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section> -->
+  <NewFooter />
   </div>
 </template>
 
 <script>
 // import Banner from './components/Banner'
 // import Nav from './components/Nav.vue'
+import { getFooterData } from '@/api/index'
+import  NewFooter  from './components/NewFooter.vue'
 
 export default {
-  // components: {Nav},
+  components: {
+    NewFooter
+  },
   data() {
     return {
       submitting: false,
       contactForm: {
+        address: '測試地址',
         name: '',
         company: '',
         phone: '',
@@ -565,36 +571,27 @@ export default {
       ]
     };
   },
-  
+  mounted() {
+    this.getBaseInfo(); 
+  },
   methods: {
-    submitContact() {
-      // 簡單的表單驗證
-      if (!this.contactForm.name || !this.contactForm.phone || !this.contactForm.email) {
-        this.$message.warning('請填寫必要的聯繫信息');
-        return;
-      }
-      
-      this.submitting = true;
-      
-      // 模擬提交過程
-      setTimeout(() => {
-        this.submitting = false;
-        this.$message.success('詢盤提交成功，我們會在24小時內與您聯繫！');
-        this.resetForm();
-      }, 2000);
+
+    async getBaseInfo() {
+        try {
+            // 获取Footer数据
+            const response = await getFooterData();
+            // 如果请求成功，且数据不为空，则更新数据
+            if (response.code === 0 && response.data.length > 0) {
+                this.contactForm = response.data[0];
+                // 将数据缓存到localStorage
+                // localStorage.setItem('footerData', JSON.stringify(this.footerData));
+            } else {
+                console.error('Failed to fetch footer data:', response.message);
+            }
+        } catch (error) {
+            console.error('Failed to fetch footer data:', error);
+        }
     },
-    
-    resetForm() {
-      this.contactForm = {
-        name: '',
-        company: '',
-        phone: '',
-        email: '',
-        country: '',
-        product: '',
-        message: ''
-      };
-    }
   }
 };
 </script>
@@ -1235,64 +1232,6 @@ export default {
   line-height: 1.5;
 }
 
-/* 聯繫我們 */
-.contact-content {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 50px;
-}
-
-.contact-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: flex-start;
-  width: calc(50% - 10px); /* 每行两个，间隔20px */
-}
-
-.contact-icon {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2rem;
-  margin-right: 20px;
-  flex-shrink: 0;
-}
-
-.contact-details h4 {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #2c3e50;
-}
-
-.contact-details p {
-  color: #7f8c8d;
-  line-height: 1.6;
-}
-
-.contact-form {
-  background: #f8f9fa;
-  border-radius: 15px;
-  padding: 40px;
-}
-
-.form-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 25px;
-  color: #2c3e50;
-  text-align: center;
-}
 
 /* 響應式設計 */
 @media (max-width: 768px) {

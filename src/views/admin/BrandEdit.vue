@@ -267,7 +267,7 @@ import {
   View, Shop, InfoFilled, QuestionFilled, SuccessFilled, WarningFilled
 } from '@element-plus/icons-vue';
 import { addBrand } from '@/api/brands'
-import { uploadLogo } from '@/api/product'
+// import { uploadLogo } from '@/api/product'
 
 
 export default {
